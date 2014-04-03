@@ -2,7 +2,9 @@ package com.example.knock_knock;
 
 import android.os.Bundle;
 import android.app.Activity;
+import android.content.Intent;
 import android.view.Menu;
+import android.view.View;
 
 public class SoundSettings extends Activity {
 
@@ -18,5 +20,18 @@ public class SoundSettings extends Activity {
 		getMenuInflater().inflate(R.menu.sound_settings, menu);
 		return true;
 	}
+	
+	public void toTrainMenu(View view){
+		//Method for button onClick, returns to TrainingMenu
+		Intent intent = new Intent(this, TrainingMenu.class);
+	    startActivity(intent);
+	}
+	
+	public void toSplashPage(View view){
+		//Method for button onClick, returns to SplashPage
+		Intent intent = new Intent(this, SplashPage.class);
+	    startActivity(intent);
+	}
 
 }
+

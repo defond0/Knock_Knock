@@ -6,5 +6,16 @@
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_training_menu">TrainingMenu</string>
     <string name="title_activity_sound_settings">SoundSettings</string>
+    <string name="welcomeSplash">Knock-Knock</string>
+    <string name="ON">ON</string>
+    <string name="splashTraining">New Sound Training</string>
+    <string name="splashSoundSettings">Sound Settings</string>
+    <string name="colorGreen">#17C700</string>
+    <string name="colorBG">#3CFFF82</string>
+    <string name="colorPurple">#B282FF</string>
+    <string name="colorYellow">#F5F525</string>
+    <string name="colorRed">#F7366D</string>
+    <string name="msgWelcome">Welcome</string>
+    <string name="backButton">&lt;-</string>
 
 </resources>
