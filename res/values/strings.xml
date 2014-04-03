@@ -17,5 +17,8 @@
     <string name="colorRed">#F7366D</string>
     <string name="msgWelcome">Welcome</string>
     <string name="backButton">&lt;-</string>
+    <string name="soundSelectionTitle">Sound Selection</string>
+    <string name="addNewSound">Add New Sound</string>
+    <string name="notificationSettings">Notification Settings</string>
 
 </resources>
