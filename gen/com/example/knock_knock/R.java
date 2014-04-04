@@ -25,28 +25,20 @@ public final class R {
         public static final int soundoff=0x7f020001;
     }
     public static final class id {
-        public static final int action_settings=0x7f080015;
-        public static final int addNewSoundButton=0x7f08000f;
+        public static final int action_settings=0x7f08000d;
+        public static final int addNewSoundButton=0x7f080007;
         public static final int backButton=0x7f080002;
-        public static final int checkBox1=0x7f080007;
-        public static final int checkBox2=0x7f080009;
-        public static final int checkBox3=0x7f08000b;
-        public static final int checkBox4=0x7f08000d;
-        public static final int messageText=0x7f080014;
-        public static final int notificationSettingsButton=0x7f08000e;
+        public static final int messageText=0x7f08000c;
+        public static final int notificationSettingsButton=0x7f080006;
         public static final int notificationText=0x7f080000;
-        public static final int onButton=0x7f080011;
+        public static final int onButton=0x7f080009;
         public static final int soundSelectionScroller=0x7f080004;
         public static final int soundSelectionTitle=0x7f080003;
-        public static final int soundSettingsButton=0x7f080012;
+        public static final int soundSettingsButton=0x7f08000a;
         public static final int soundTable=0x7f080005;
         public static final int splash=0x7f080001;
-        public static final int splashTitle=0x7f080013;
-        public static final int tableRow1=0x7f080006;
-        public static final int tableRow2=0x7f080008;
-        public static final int tableRow3=0x7f08000a;
-        public static final int tableRow4=0x7f08000c;
-        public static final int trainingButton=0x7f080010;
+        public static final int splashTitle=0x7f08000b;
+        public static final int trainingButton=0x7f080008;
     }
     public static final class layout {
         public static final int activity_notification__screen=0x7f030000;
