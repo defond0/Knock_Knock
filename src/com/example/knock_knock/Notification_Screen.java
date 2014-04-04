@@ -5,28 +5,29 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
-public class SoundSettings extends Activity {
+public class Notification_Screen extends Activity {
+	
+	private TextView notificationText;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_sound_settings);
+		setContentView(R.layout.activity_notification__screen);
+		Intent intent = getIntent();
+		String notification = intent.getStringExtra(backGroundListener.EXTRA_MESSAGE);
+		notificationText = (TextView) findViewById(R.id.notificationText);
+		notificationText.setText(notification);
+		
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.sound_settings, menu);
+		getMenuInflater().inflate(R.menu.notification__screen, menu);
 		return true;
-	}
-	
-	public void toTrainMenu(View view){
-		//Method for button onClick, returns to TrainingMenu
-		Intent i = new Intent(this, TrainingMenu.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-	    startActivity(i);
 	}
 	
 	public void toSplashPage(View view){
@@ -38,4 +39,3 @@ public class SoundSettings extends Activity {
 	}
 
 }
-

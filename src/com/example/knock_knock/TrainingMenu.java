@@ -12,6 +12,7 @@ public class TrainingMenu extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_training_menu);
+		
 	}
 
 	@Override
@@ -22,14 +23,18 @@ public class TrainingMenu extends Activity {
 	}
 	
 	public void toSoundMenu(View view){
-		Intent intent = new Intent(this, SoundSettings.class);
-	    startActivity(intent);
+		Intent i = new Intent(this, SoundSettings.class);
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+	    startActivity(i);
 	}
 	
 	public void toSplashPage(View view){
 		//Method for button onClick, returns to SplashPage
-		Intent intent = new Intent(this, SplashPage.class);
-	    startActivity(intent);
+		Intent i = new Intent(this, SplashPage.class);
+		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+	    startActivity(i);
 	}
 
 }

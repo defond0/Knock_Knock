@@ -8,6 +8,8 @@
         android:minSdkVersion="8"
         android:targetSdkVersion="18" />
 
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -29,6 +31,16 @@
         <activity
             android:name="com.example.knock_knock.SoundSettings"
             android:label="@string/title_activity_sound_settings" >
+        </activity>
+
+        <service
+            android:name="com.example.knock_knock.backGroundListener"
+            android:label="@string/backGroundListener" >
+        </service>
+
+        <activity
+            android:name="com.example.knock_knock.Notification_Screen"
+            android:label="@string/title_activity_notification__screen" >
         </activity>
     </application>
 

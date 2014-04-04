@@ -20,5 +20,9 @@
     <string name="soundSelectionTitle">Sound Selection</string>
     <string name="addNewSound">Add New Sound</string>
     <string name="notificationSettings">Notification Settings</string>
+    <string name="OFF">OFF</string>
+    <string name="backGroundListener">backGroundListener</string>
+    <string name="title_activity_notification__screen">Notification_Screen</string>
+    <string name="mainMenu">Main Menu</string>
 
 </resources>
