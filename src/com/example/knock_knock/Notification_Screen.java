@@ -20,7 +20,12 @@ public class Notification_Screen extends Activity {
 		String notification = intent.getStringExtra(backGroundListener.EXTRA_MESSAGE);
 		notificationText = (TextView) findViewById(R.id.notificationText);
 		notificationText.setText(notification);
-		
+		startListening();
+	}
+	
+	public void startListening(){
+		Intent i = new Intent(this, backGroundListener.class);
+		this.startService(i);
 	}
 
 	@Override

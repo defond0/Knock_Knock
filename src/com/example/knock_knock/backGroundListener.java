@@ -45,6 +45,8 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 		return super.onStartCommand(intent,flags,startId);
 	  }
 	
+	
+	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
@@ -86,6 +88,7 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 		});
 		listen.start();
 	}
+	
 
 	@Override
 	public void handleOnset(double time, double salience) {
