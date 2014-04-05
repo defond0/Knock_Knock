@@ -44,24 +44,4 @@
         </TableLayout>
     </ScrollView>
 
-    <Button
-        android:id="@+id/notificationSettingsButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/addNewSoundButton"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true"
-        android:text="@string/notificationSettings" />
-
-    <Button
-        android:id="@+id/addNewSoundButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_marginBottom="47dp"
-        android:gravity="center"
-        android:onClick="toTrainMenu"
-        android:text="@string/addNewSound" />
-
 </RelativeLayout>

@@ -24,5 +24,9 @@
     <string name="backGroundListener">backGroundListener</string>
     <string name="title_activity_notification__screen">Notification_Screen</string>
     <string name="mainMenu">Main Menu</string>
+    <string name="title_activity_nav_action_bar">NavActionBarActivity</string>
+    <string name="action_bar_home">Home</string>
+    <string name="action_bar_settings">Sound Settings</string>
+    <string name="action_bar_training">Train New Sound</string>
 
 </resources>
