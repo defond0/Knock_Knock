@@ -38,5 +38,7 @@
     <string name="alertColorBlue">Blue</string>
     <string name="alertColorGreen">Green</string>
     <string name="alertColorPurple">Purple</string>
+    <string name="title_activity_specific_sound_settings">SpecificSoundSettings</string>
+    <string name="title_activity_notification_preferences">NotificationPreferencesActivity</string>
 
 </resources>
