@@ -39,7 +39,7 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 		rec = true;
 		//Get SharedPreferences and loud up sounds
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		checkedSounds = prefs.getStringSet("checkedSounds",new HashSet<String>());
+		checkedSounds = PreferenceStorage.getAllCheckedSounds(prefs);
 		notification = "";
 		listen();
 		return super.onStartCommand(intent,flags,startId);

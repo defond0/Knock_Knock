@@ -46,6 +46,7 @@
         android:layout_below="@+id/newSoundLabel"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="70dp"
+        android:onClick="saveSound"
         android:text="@string/save" />
 
 </RelativeLayout>
