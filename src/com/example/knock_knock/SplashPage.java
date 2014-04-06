@@ -94,16 +94,12 @@ public class SplashPage extends Activity {
 	public void toTrainMenu(View view){
 		//Method for button onClick, returns to TrainingMenu
 		Intent i = new Intent(this, TrainingMenu.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
 	}
 	
 	public void toSoundMenu(View view){
 		//Method for button onClick, returns to SoundSettingMenu
 		Intent i = new Intent(this, SoundSettings.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
 	}
 	

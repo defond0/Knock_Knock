@@ -4,25 +4,28 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
-import android.support.v4.app.TaskStackBuilder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 
-public class TrainingMenu extends Activity {
-
+public class TrainingListen extends Activity {
+	
+	private boolean isRecording;
+	private Button recordButton;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_training_menu);
+		setContentView(R.layout.activity_training_listen);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
-	
+		isRecording = false; //might need to do something with app lifecycle
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.training_menu, menu);
+		getMenuInflater().inflate(R.menu.training_listen, menu);
 		return true;
 	}
 	
@@ -37,9 +40,17 @@ public class TrainingMenu extends Activity {
 	    return super.onOptionsItemSelected(item);
 	}
 	
-	public void toTrainListen(View view){
-		Intent i = new Intent(this, TrainingListen.class);
-	    startActivity(i);
+	public void recordHandler(View view){
+		recordButton = (Button) findViewById(R.id.recordButton);
+		if (!isRecording) {
+			recordButton.setText(getResources().getString(R.string.Done));
+			isRecording = true;
+		} else {
+			//recordButton.setText(getResources().getString(R.string.start));
+			isRecording = false;
+			Intent i = new Intent(this, TrainingFinal.class);
+		    startActivity(i);
+		}
 	}
 
 }
