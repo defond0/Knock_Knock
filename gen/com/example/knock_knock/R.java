@@ -26,15 +26,17 @@ public final class R {
         public static final int soundoff=0x7f020002;
     }
     public static final class id {
-        public static final int action_settings=0x7f080011;
+        public static final int action_settings=0x7f080013;
         public static final int addNewSoundButton=0x7f080007;
         public static final int backButton=0x7f080002;
-        public static final int imageView1=0x7f08000f;
+        public static final int button1=0x7f080010;
+        public static final int imageView1=0x7f080012;
         public static final int messageText=0x7f08000c;
+        public static final int newSoundLabel=0x7f08000e;
         public static final int notificationSettingsButton=0x7f080006;
         public static final int notificationText=0x7f080000;
         public static final int onButton=0x7f080009;
-        public static final int recordButton=0x7f08000e;
+        public static final int recordButton=0x7f080011;
         public static final int soundSelectionScroller=0x7f080004;
         public static final int soundSelectionTitle=0x7f080003;
         public static final int soundSettingsButton=0x7f08000a;
@@ -42,7 +44,7 @@ public final class R {
         public static final int splash=0x7f080001;
         public static final int splashTitle=0x7f08000b;
         public static final int textView1=0x7f08000d;
-        public static final int textView2=0x7f080010;
+        public static final int textView2=0x7f08000f;
         public static final int trainingButton=0x7f080008;
     }
     public static final class layout {
@@ -77,13 +79,16 @@ public final class R {
         public static final int colorRed=0x7f05000d;
         public static final int colorYellow=0x7f05000c;
         public static final int hello_world=0x7f050002;
+        public static final int label_new_sound=0x7f050020;
         public static final int mainMenu=0x7f050016;
         public static final int msgWelcome=0x7f05000e;
         public static final int notificationSettings=0x7f050012;
+        public static final int save=0x7f050021;
         public static final int soundSelectionTitle=0x7f050010;
         public static final int splashSoundSettings=0x7f050008;
         public static final int splashTraining=0x7f050007;
         public static final int start=0x7f05001d;
+        public static final int sucess=0x7f05001f;
         public static final int title_activity_notification__screen=0x7f050015;
         public static final int title_activity_sound_settings=0x7f050004;
         public static final int title_activity_training_final=0x7f05001e;

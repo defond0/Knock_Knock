@@ -32,5 +32,8 @@
     <string name="Done">Done</string>
     <string name="start">Start</string>
     <string name="title_activity_training_final">TrainingFinal</string>
+    <string name="sucess">Success!</string>
+    <string name="label_new_sound">Lable New Sound:</string>
+    <string name="save">Save</string>
 
 </resources>
