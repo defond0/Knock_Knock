@@ -1,0 +1,105 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.example.knock_knock.NotificationPreferencesActivity$PlaceholderFragment" >
+
+       <TextView
+        android:id="@+id/notificationSettingsTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notificationSettingsTitle"
+        android:layout_alignParentLeft="true"
+        android:gravity="center"
+        android:textSize="26sp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <TextView
+        android:id="@+id/notificationTypeSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/notificationTypeTitle"
+        android:layout_below="@+id/notificationSettingsTitle"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <RelativeLayout
+        android:id="@+id/notificationTypeContainer"
+    	android:orientation="vertical"
+   		android:layout_width="match_parent"
+    	android:layout_height="wrap_content"
+    	android:layout_alignParentLeft="true"
+    	android:layout_below="@+id/notificationTypeSettings">
+    
+	    <CheckBox android:id="@+id/notificationTypePush"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:text="@string/notificationTypePush"
+	        android:onClick="onNotificationSelected"/>
+	    
+	    <CheckBox android:id="@+id/notificationTypeAlert"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_toRightOf="@+id/notificationTypePush"
+	        android:text="@string/notificationTypeAlert"
+	        android:onClick="onNotificationSelected"/>
+	    
+	    <CheckBox android:id="@+id/notificationTypeVibrate"
+	        android:layout_height="wrap_content"
+	        android:layout_width="wrap_content"
+	        android:layout_toRightOf="@+id/notificationTypeAlert"
+	        android:text="@string/notificationTypeVibrate"
+	        android:onClick="onNotificationSelected"/>
+	    
+	</RelativeLayout>
+        
+   <TextView
+        android:id="@+id/alertColorSettings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/alertColorTitle"
+        android:layout_below="@+id/notificationTypeContainer"
+        android:layout_alignParentLeft="true"
+        android:layout_marginTop="50dp"
+        android:textSize="20sp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+   
+   <RadioGroup
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/alertColorSettings"
+    android:orientation="horizontal">
+   
+    <RadioButton android:id="@+id/alertColorRed"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertColorRed"
+        android:onClick="onAlertColorSelected"/>
+    
+     <RadioButton android:id="@+id/alertColorBlue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertColorBlue"
+        android:onClick="onAlertColorSelected"/>
+     
+    <RadioButton android:id="@+id/alertColorGreen"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertColorGreen"
+        android:onClick="onAlertColorSelected"/>
+    
+    <RadioButton android:id="@+id/alertColorPurple"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertColorPurple"
+        android:onClick="onAlertColorSelected"/>
+    
+    </RadioGroup>
+
+</RelativeLayout>

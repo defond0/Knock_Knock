@@ -9,22 +9,24 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.ScrollView;
+import android.widget.CompoundButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
+import android.widget.TextView;
+import android.widget.ToggleButton;
 
 public class SoundSettings extends Activity {
-	
 	
 	private TableLayout soundTable;
 	private Set<String> allSounds;
 	private Set<String> checkedSounds;
 	public static final String PREFS_NAME = "KnockKnockPrefs";
 	private Set<String> deFault = new HashSet<String>();
+	SharedPreferences prefs;
 	
 	
 	@Override
@@ -38,66 +40,107 @@ public class SoundSettings extends Activity {
 		deFault.add("Dummy0");
 		deFault.add("Dummy1");
 		
+		//Load previously set user preferences
+		loadSoundSelectionPreferences();	
+		
+	}
+	
+	private void loadSoundSelectionPreferences() {
 		//Get SharedPreferences and loud up sounds
-		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		allSounds = prefs.getStringSet("allSounds",deFault);
-		checkedSounds = prefs.getStringSet("checkedSounds",new HashSet<String>());
+		prefs = getSharedPreferences(PREFS_NAME, 0);
+		allSounds = PreferenceStorage.getAllSounds(prefs,deFault);
 		
 		//Get Table
 		soundTable = (TableLayout)findViewById(R.id.soundTable);
 		
-		//Load
+		//Load sound selection preferences
 		Iterator<String> soundIter = allSounds.iterator();
 		while(soundIter.hasNext()){
-			String curSound = soundIter.next();
+			final String curSound = soundIter.next();
 			TableRow curRow = new TableRow(this);
-			CheckBox curBox = new CheckBox(this);
-			curBox.setText(curSound);
-			if(checkedSounds.contains(curSound)){
-				curBox.setChecked(true);
+			
+			//Label for sound
+			TextView text = new TextView(this);
+			text.setText(curSound);
+			text.setTextSize(20);
+			
+			//Toggle button for sound
+			ToggleButton toggle = new ToggleButton(this);
+			if(PreferenceStorage.isSoundOn(prefs, curSound)){
+				toggle.setChecked(true);
 			}
 			else{
-				curBox.setChecked(false);
+				toggle.setChecked(false);
 			}
-			curBox.setOnClickListener(new OnClickListener(){
+			toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
 				@Override
-				public void onClick(View box) {
-					if(((CheckBox)box).isChecked()){
-						checkedSounds.add(((CheckBox)box).getText().toString());
+				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+					if(isChecked){
+						PreferenceStorage.setSound(prefs, curSound, true);
+					} else {
+						PreferenceStorage.setSound(prefs, curSound, false);
 					}
-					else
-						checkedSounds.remove(((CheckBox)box).getText().toString());		
+				    SharedPreferences.Editor editor = prefs.edit();
+				    editor.putStringSet("checkedSounds", checkedSounds);
+				    editor.commit();
 				}
 				
 			});
-			curRow.addView(curBox);
+			
+			//Settings button for sound
+			Button settings = new Button(this);
+			settings.setText("Settings");
+			settings.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					toNotificationPreferences(curSound);			
+				}
+				
+			});
+
+			//Align toggle button to right
+			/*TableLayout.LayoutParams params = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
+			params.weight = 1.0f;
+			params.gravity=Gravity.RIGHT;
+			toggle.setLayoutParams(params);*/
+			
+			//Add all components to view
+			curRow.addView(toggle);
+			curRow.addView(text);
+			curRow.addView(settings);
 			soundTable.addView(curRow);
 		}
-		
 	}
+	
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.sound_settings, menu);
+		getMenuInflater().inflate(R.menu.nav_action_bar, menu);
+		menu.findItem(R.id.action_bar_settings).setEnabled(false);
 		return true;
 	}
 	
-	
-	
 	@Override
-    protected void onStop(){
-       super.onStop();
-      // We need an Editor object to make preference changes.
-      // All objects are from android.context.Context
-      SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-      SharedPreferences.Editor editor = settings.edit();
-      //editor.putStringSet("allSounds", allSounds);
-      editor.putStringSet("checkedSounds", checkedSounds);
-      editor.commit();
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle action bar item clicks here. The action bar will
+		// automatically handle clicks on the Home/Up button, so long
+		// as you specify a parent activity in AndroidManifest.xml.
+		switch (item.getItemId()) {
+	        case R.id.action_bar_home:
+	        	toSplashPage();
+	            return true;
+	        case R.id.action_bar_training:
+	        	toTrainMenu();
+	            return true;
+	        default:
+	            return super.onOptionsItemSelected(item);
+		}
 	}
 	
-	public void toTrainMenu(View view){
+	public void toTrainMenu(){
 		//Method for button onClick, returns to TrainingMenu
 		Intent i = new Intent(this, TrainingMenu.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -105,12 +148,18 @@ public class SoundSettings extends Activity {
 	    startActivity(i);
 	}
 	
-	public void toSplashPage(View view){
+	public void toSplashPage(){
 		//Method for button onClick, returns to SplashPage
 		Intent i = new Intent(this, SplashPage.class);
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
+	}
+	
+	public void toNotificationPreferences(String soundName) {
+		Intent i = new Intent(this, NotificationSettings.class);
+		i.putExtra("sound", soundName);
+		startActivity(i);
 	}
 
 }

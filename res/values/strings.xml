@@ -24,6 +24,7 @@
     <string name="backGroundListener">backGroundListener</string>
     <string name="title_activity_notification__screen">Notification_Screen</string>
     <string name="mainMenu">Main Menu</string>
+<<<<<<< HEAD
     <string name="training_title">Sound Training</string>
     <string name="training_instruction">Press BEGIN to start recording your designated noise. Repeat the noise as many time as prompted in order to ensure optimal quality.</string>
     <string name="Begin">Begin</string>
@@ -35,5 +36,23 @@
     <string name="sucess">Success!</string>
     <string name="label_new_sound">Lable New Sound:</string>
     <string name="save">Save</string>
+=======
+    <string name="title_activity_nav_action_bar">NavActionBarActivity</string>
+    <string name="action_bar_home">Home</string>
+    <string name="action_bar_settings">Sound Settings</string>
+    <string name="action_bar_training">Train New Sound</string>
+    <string name="notificationSettingsTitle">Notification Options</string>
+    <string name="notificationTypeTitle">Notification Type</string>
+    <string name="notificationTypeVibrate">Vibrate</string>
+    <string name="notificationTypeAlert">Alert</string>
+    <string name="notificationTypePush">Push Notification</string>
+    <string name="alertColorTitle">Alert Color</string>
+    <string name="alertColorRed">Red</string>
+    <string name="alertColorBlue">Blue</string>
+    <string name="alertColorGreen">Green</string>
+    <string name="alertColorPurple">Purple</string>
+    <string name="title_activity_specific_sound_settings">SpecificSoundSettings</string>
+    <string name="title_activity_notification_preferences">NotificationPreferencesActivity</string>
+>>>>>>> origin/ui
 
 </resources>

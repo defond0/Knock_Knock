@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:Knock_Knock="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.example.knock_knock.NavActionBarActivity" >
+    
+    <item
+        android:id="@+id/action_bar_home"
+        android:title="@string/action_bar_home"
+        android:showAsAction="always"/>
+    
+    <item
+        android:id="@+id/action_bar_training"
+        android:title="@string/action_bar_training"
+        android:showAsAction="always"/>
+    
+    <item
+        android:id="@+id/action_bar_settings"
+        android:title="@string/action_bar_settings"
+        android:showAsAction="always"/>
+
+</menu>
