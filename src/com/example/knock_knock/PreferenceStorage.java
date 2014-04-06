@@ -1,6 +1,7 @@
 package com.example.knock_knock;
 
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 
 import android.content.SharedPreferences;
@@ -20,6 +21,18 @@ public class PreferenceStorage {
 	
 	public static Set<String> getAllSounds(SharedPreferences prefs, Set<String> deFault) {
 		return prefs.getStringSet(PreferenceStorage.ALL_SOUNDS, deFault);
+	}
+	
+	public static Set<String> getAllCheckedSounds(SharedPreferences prefs) {
+		HashSet<String> result = new HashSet<String>();
+		Iterator<String> it = getAllSounds(prefs, new HashSet<String>()).iterator();
+		while(it.hasNext()) {
+			String soundName = it.next();
+			if (isSoundOn(prefs, soundName)) {
+				result.add(soundName);
+			}
+		}
+		return result;
 	}
 	
 	public static void setAllSounds(SharedPreferences prefs) {
