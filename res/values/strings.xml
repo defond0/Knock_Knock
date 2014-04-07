@@ -51,5 +51,9 @@
     <string name="alertColorPurple">Purple</string>
     <string name="title_activity_specific_sound_settings">SpecificSoundSettings</string>
     <string name="title_activity_notification_preferences">NotificationPreferencesActivity</string>
+    <color name="Red">#E81616</color>
+    <color name="Green">#20AC0B</color>
+    <color name="Blue">#0009FF</color>
+    <color name="Purple">#9100FF</color>
 
 </resources>

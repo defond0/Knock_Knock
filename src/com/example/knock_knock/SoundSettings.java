@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -97,9 +98,24 @@ public class SoundSettings extends Activity {
 			params.gravity=Gravity.RIGHT;
 			toggle.setLayoutParams(params);*/
 			
+			//Add color 
+			int color =Color.parseColor(PreferenceStorage.getAlertColor(prefs,curSound));
+			Button colorBox = new Button(this);
+			colorBox.setBackgroundColor(color);
+			colorBox.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					toNotificationPreferences(curSound);			
+				}
+				
+			});
+			
+			
 			//Add all components to view
 			curRow.addView(toggle);
 			curRow.addView(text);
+			curRow.addView(colorBox);
 			curRow.addView(settings);
 			soundTable.addView(curRow);
 		}
