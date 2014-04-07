@@ -148,23 +148,17 @@ public class NotificationSettings extends Activity {
 	public void toTrainMenu(){
 		//Method for button onClick, returns to TrainingMenu
 		Intent i = new Intent(this, TrainingMenu.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
 	}
 	
 	public void toSplashPage(){
 		//Method for button onClick, returns to SplashPage
 		Intent i = new Intent(this, SplashPage.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
 	}
 	
 	public void toSoundMenu(){
 		Intent i = new Intent(this, SoundSettings.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
 	}
 

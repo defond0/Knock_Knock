@@ -5,8 +5,8 @@
     android:versionName="1.0" >
 
     <uses-sdk
-        android:minSdkVersion="13"
-        android:targetSdkVersion="18" />
+        android:minSdkVersion="11"
+        android:targetSdkVersion="19" />
 
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
@@ -14,7 +14,7 @@
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:uiOptions="splitActionBarWhenNarrow" >
         <activity
             android:name="com.example.knock_knock.SplashPage"
             android:label="@string/app_name" >
@@ -65,6 +65,18 @@
         <activity
             android:name="com.example.knock_knock.Notification_Screen"
             android:label="@string/title_activity_notification__screen" >
+        </activity>
+        <activity
+            android:name="com.example.knock_knock.NavActionBarActivity"
+            android:label="@string/title_activity_nav_action_bar" >
+        </activity>
+        <activity
+            android:name="com.example.knock_knock.ToDelete"
+            android:label="@string/title_activity_specific_sound_settings" >
+        </activity>
+        <activity
+            android:name="com.example.knock_knock.NotificationSettings"
+            android:label="@string/title_activity_notification_preferences" >
         </activity>
     </application>
 

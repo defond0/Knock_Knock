@@ -29,19 +29,6 @@ public class TrainingMenu extends Activity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-<<<<<<< HEAD
-	    switch (item.getItemId()) {
-	    // This is broken, check activity stack?
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
-	
-	public void toTrainListen(View view){
-		Intent i = new Intent(this, TrainingListen.class);
-=======
 		// Handle action bar item clicks here. The action bar will
 		// automatically handle clicks on the Home/Up button, so long
 		// as you specify a parent activity in AndroidManifest.xml.
@@ -52,24 +39,27 @@ public class TrainingMenu extends Activity {
 	        case R.id.action_bar_settings:
 	        	toSoundMenu();
 	            return true;
+		    case android.R.id.home:
+		        NavUtils.navigateUpFromSameTask(this);
+		        return true;
 	        default:
 	            return super.onOptionsItemSelected(item);
 		}
 	}
 	
+	public void toTrainListen(View view){
+		Intent i = new Intent(this, TrainingListen.class);
+		startActivity(i);
+	}
+	
 	public void toSoundMenu(){
 		Intent i = new Intent(this, SoundSettings.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
 	}
 	
 	public void toSplashPage(){
 		//Method for button onClick, returns to SplashPage
 		Intent i = new Intent(this, SplashPage.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
->>>>>>> origin/ui
 	    startActivity(i);
 	}
 

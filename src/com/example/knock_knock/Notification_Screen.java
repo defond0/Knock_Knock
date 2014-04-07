@@ -38,8 +38,6 @@ public class Notification_Screen extends Activity {
 	public void toSplashPage(View view){
 		//Method for button onClick, returns to SplashPage
 		Intent i = new Intent(this, SplashPage.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 	    startActivity(i);
 	}
 
