@@ -3,12 +3,9 @@ package com.example.knock_knock;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.graphics.Color;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 public class Notification_Screen extends Activity {
@@ -19,18 +16,10 @@ public class Notification_Screen extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_notification__screen);
-		//Display type of sound that was detected
 		Intent intent = getIntent();
 		String notification = intent.getStringExtra(backGroundListener.EXTRA_MESSAGE);
 		notificationText = (TextView) findViewById(R.id.notificationText);
 		notificationText.setText(notification);
-		//Change background color
-		String soundName = intent.getStringExtra(backGroundListener.SOUND_NAME);
-		SharedPreferences prefs = getSharedPreferences(SoundSettings.PREFS_NAME, 0);
-		int color =Color.parseColor(PreferenceStorage.getAlertColor(prefs,soundName));
-		RelativeLayout container = (RelativeLayout) findViewById(R.id.notificationScreenContainer);
-		container.setBackgroundColor(color);
-		//Default listening
 		startListening();
 	}
 	

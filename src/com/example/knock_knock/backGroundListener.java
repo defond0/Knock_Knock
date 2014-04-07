@@ -30,7 +30,6 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 	private boolean rec;
 	private Set<String> checkedSounds;
 	public final static String EXTRA_MESSAGE = "com.example.backGroundList.MESSAGE";
-	public final static String SOUND_NAME = "com.example.backGroundList.SOUNDNAME";
 	public static final String PREFS_NAME = "KnockKnockPrefs";
 	private String notification;
 	
@@ -100,8 +99,6 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 		i.putExtra(EXTRA_MESSAGE, notification);
-		//fix once we can detect different sounds
-		i.putExtra(SOUND_NAME, notification);
 	    startActivity(i);
 	    this.stopSelf();
 	}
@@ -117,8 +114,6 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 			i.putExtra(EXTRA_MESSAGE, notification);
-			//fix when we can detect different sounds
-			i.putExtra(SOUND_NAME, notification);
 		    startActivity(i);
 		    this.stopSelf();
 		}
