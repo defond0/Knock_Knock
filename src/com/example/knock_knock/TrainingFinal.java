@@ -42,9 +42,7 @@ public class TrainingFinal extends Activity {
 		PreferenceStorage.addSound(getSharedPreferences(SoundSettings.PREFS_NAME, 0), label);
 		
 		Intent i = new Intent(this, SoundSettings.class);
-		i.putExtra("newSoundLabel", label);
 		startActivity(i);
-		//do nothing
 	}
 
 }

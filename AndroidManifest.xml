@@ -57,7 +57,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.knock_knock.SplashPage" />
         </activity>
-
+        <activity
+            android:name="com.example.knock_knock.NotificationSettings"
+            android:label="@string/title_activity_notification_preferences" >
+        </activity>
         <service
             android:name="com.example.knock_knock.backGroundListener"
             android:label="@string/backGroundListener" >
@@ -74,10 +77,6 @@
         <activity
             android:name="com.example.knock_knock.ToDelete"
             android:label="@string/title_activity_specific_sound_settings" >
-        </activity>
-        <activity
-            android:name="com.example.knock_knock.NotificationSettings"
-            android:label="@string/title_activity_notification_preferences" >
         </activity>
     </application>
 
