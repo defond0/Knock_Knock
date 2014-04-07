@@ -9,15 +9,6 @@
     tools:context=".SplashPage" >
 
     <Button
-        android:id="@+id/trainingButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/onButton"
-        android:layout_centerHorizontal="true"
-        android:onClick="toTrainMenu"
-        android:text="@string/splashTraining" />
-
-    <Button
         android:id="@+id/soundSettingsButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -26,16 +17,6 @@
         android:layout_below="@+id/trainingButton"
         android:onClick="toSoundMenu"
         android:text="@string/splashSoundSettings" />
-
-    <Button
-        android:id="@+id/onButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignLeft="@+id/trainingButton"
-        android:layout_alignRight="@+id/trainingButton"
-        android:layout_below="@+id/splashTitle"
-        android:layout_marginTop="103dp"
-        android:text="@string/ON" />
 
     <TextView
         android:id="@+id/splashTitle"
@@ -48,14 +29,22 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textSize="40sp" />
 
-    <TextView
-        android:id="@+id/messageText"
+    <Button
+        android:id="@+id/trainingButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/onButton"
+        android:layout_below="@+id/splashOnOff"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="60dp"
-        android:text="@string/msgWelcome"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
+        android:layout_marginTop="51dp"
+        android:onClick="toTrainMenu"
+        android:text="@string/splashTraining" />
+
+    <ToggleButton
+        android:id="@+id/splashOnOff"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="ToggleButton" />
 
 </RelativeLayout>

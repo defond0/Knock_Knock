@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Knock_Knock</string>
+    <string name="app_name">KnockKnock</string>
     <string name="action_settings">Settings</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_training_menu">TrainingMenu</string>
     <string name="title_activity_sound_settings">SoundSettings</string>
     <string name="welcomeSplash">Knock-Knock</string>
     <string name="ON">ON</string>
-    <string name="splashTraining">New Sound Training</string>
+    <string name="splashTraining">Add New Sound</string>
     <string name="splashSoundSettings">Sound Settings</string>
     <string name="colorGreen">#17C700</string>
     <string name="colorBG">#3CFFF82</string>
@@ -33,7 +33,7 @@
     <string name="start">Start</string>
     <string name="title_activity_training_final">TrainingFinal</string>
     <string name="sucess">Success!</string>
-    <string name="label_new_sound">Lable New Sound:</string>
+    <string name="label_new_sound">Label New Sound:</string>
     <string name="save">Save</string>
     <string name="title_activity_nav_action_bar">NavActionBarActivity</string>
     <string name="action_bar_home">Home</string>
