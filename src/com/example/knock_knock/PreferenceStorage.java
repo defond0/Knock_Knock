@@ -1,5 +1,6 @@
 package com.example.knock_knock;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -18,14 +19,16 @@ public class PreferenceStorage {
 	public static final String PUSH_NOTIF = "_push";
 	public static final String ALERT_NOTIF = "_alert";
 	public static final String VIBRATE_NOTIF = "_vibrate";
+	public static final String[] DEFAULT_SOUNDS = {"Clap", "Whistle", "Dummy0", "Dummy1" };
 	
-	public static Set<String> getAllSounds(SharedPreferences prefs, Set<String> deFault) {
-		return prefs.getStringSet(PreferenceStorage.ALL_SOUNDS, deFault);
+	public static Set<String> getAllSounds(SharedPreferences prefs) {
+		Set<String> defaultSet = new HashSet<String>(Arrays.asList(DEFAULT_SOUNDS));
+		return prefs.getStringSet(PreferenceStorage.ALL_SOUNDS, defaultSet);
 	}
 	
 	public static Set<String> getAllCheckedSounds(SharedPreferences prefs) {
 		HashSet<String> result = new HashSet<String>();
-		Iterator<String> it = getAllSounds(prefs, new HashSet<String>()).iterator();
+		Iterator<String> it = getAllSounds(prefs).iterator();
 		while(it.hasNext()) {
 			String soundName = it.next();
 			if (isSoundOn(prefs, soundName)) {
@@ -35,9 +38,15 @@ public class PreferenceStorage {
 		return result;
 	}
 	
-	public static void setAllSounds(SharedPreferences prefs) {
+	public static void addSound(SharedPreferences prefs, String soundName) {
+		Set<String> allSounds = getAllSounds(prefs);
+		allSounds.add(soundName);
+		setAllSounds(prefs, allSounds);
+	}
+	
+	public static void setAllSounds(SharedPreferences prefs, Set<String> allSounds) {
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putStringSet(PreferenceStorage.ALL_SOUNDS, new HashSet<String>());
+		editor.putStringSet(PreferenceStorage.ALL_SOUNDS, allSounds);
 		editor.commit();
 	}
 	

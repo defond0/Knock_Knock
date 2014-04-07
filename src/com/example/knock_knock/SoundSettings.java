@@ -25,7 +25,6 @@ public class SoundSettings extends Activity {
 	private Set<String> allSounds;
 	private Set<String> checkedSounds;
 	public static final String PREFS_NAME = "KnockKnockPrefs";
-	private Set<String> deFault = new HashSet<String>();
 	SharedPreferences prefs;
 	
 	
@@ -33,12 +32,6 @@ public class SoundSettings extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_sound_settings);
-		
-		//Default sounds
-		deFault.add("Clap");
-		deFault.add("Whistle");
-		deFault.add("Dummy0");
-		deFault.add("Dummy1");
 		
 		//Load previously set user preferences
 		loadSoundSelectionPreferences();	
@@ -48,7 +41,7 @@ public class SoundSettings extends Activity {
 	private void loadSoundSelectionPreferences() {
 		//Get SharedPreferences and loud up sounds
 		prefs = getSharedPreferences(PREFS_NAME, 0);
-		allSounds = PreferenceStorage.getAllSounds(prefs,deFault);
+		allSounds = PreferenceStorage.getAllSounds(prefs);
 		
 		//Get Table
 		soundTable = (TableLayout)findViewById(R.id.soundTable);

@@ -39,6 +39,7 @@ public class TrainingFinal extends Activity {
 	public void saveSound(View view){
 		EditText newSoundLabel = (EditText) findViewById(R.id.newSoundLabel);
 		String label = newSoundLabel.getText().toString();
+		PreferenceStorage.addSound(getSharedPreferences(SoundSettings.PREFS_NAME, 0), label);
 		
 		Intent i = new Intent(this, SoundSettings.class);
 		i.putExtra("newSoundLabel", label);
