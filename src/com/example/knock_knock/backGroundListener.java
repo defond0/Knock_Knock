@@ -71,6 +71,7 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 		Thread listen = new Thread(new Runnable(){
 			public void run(){	
 				while (rec){
+					System.out.println(System.currentTimeMillis());
 					int sig = recorder.read(buffer,0,bufferSize);
 					AudioEvent ae = new AudioEvent(tarForm, sig);
 					ae.setFloatBufferWithByteBuffer(buffer);

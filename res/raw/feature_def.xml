@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<!DOCTYPE feature_key_file [
+   <!ELEMENT feature_key_file (comments, feature+)>
+   <!ELEMENT comments (#PCDATA)>
+   <!ELEMENT feature (name, description?, is_sequential, parallel_dimensions)>
+   <!ELEMENT name (#PCDATA)>
+   <!ELEMENT description (#PCDATA)>
+   <!ELEMENT is_sequential (#PCDATA)>
+   <!ELEMENT parallel_dimensions (#PCDATA)>
+]>
+
+<feature_key_file>
+
+   <comments></comments>
+
+   <feature>
+      <name>MFCC</name>
+      <description>MFCC calculations based upon Orange Cow code</description>
+      <is_sequential>true</is_sequential>
+      <parallel_dimensions>13</parallel_dimensions>
+   </feature>
+
+</feature_key_file>

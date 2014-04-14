@@ -11,10 +11,10 @@ public final class R {
     public static final class attr {
     }
     public static final class color {
-        public static final int Blue=0x7f060002;
-        public static final int Green=0x7f060001;
-        public static final int Purple=0x7f060003;
-        public static final int Red=0x7f060000;
+        public static final int Blue=0x7f070002;
+        public static final int Green=0x7f070001;
+        public static final int Purple=0x7f070003;
+        public static final int Red=0x7f070000;
     }
     public static final class dimen {
         /**  Default screen margins, per the Android Design guidelines. 
@@ -28,8 +28,8 @@ public final class R {
          screen margins) for sw720dp devices (e.g. 10" tablets) in landscape here.
     
          */
-        public static final int activity_horizontal_margin=0x7f040000;
-        public static final int activity_vertical_margin=0x7f040001;
+        public static final int activity_horizontal_margin=0x7f050000;
+        public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
         public static final int audio_placeholder=0x7f020000;
@@ -39,37 +39,37 @@ public final class R {
         public static final int soundoff=0x7f020004;
     }
     public static final class id {
-        public static final int action_bar_home=0x7f09001b;
-        public static final int action_bar_settings=0x7f09001d;
-        public static final int action_bar_training=0x7f09001c;
-        public static final int action_settings=0x7f09001e;
-        public static final int alertColorBlue=0x7f09000c;
-        public static final int alertColorGreen=0x7f09000d;
-        public static final int alertColorPurple=0x7f09000e;
-        public static final int alertColorRed=0x7f09000b;
-        public static final int alertColorSettings=0x7f09000a;
-        public static final int button1=0x7f090018;
-        public static final int container=0x7f090000;
-        public static final int imageView1=0x7f09001a;
-        public static final int newSoundLabel=0x7f090016;
-        public static final int notificationScreenContainer=0x7f090001;
-        public static final int notificationSettingsTitle=0x7f090004;
-        public static final int notificationText=0x7f090002;
-        public static final int notificationTypeAlert=0x7f090008;
-        public static final int notificationTypeContainer=0x7f090006;
-        public static final int notificationTypePush=0x7f090007;
-        public static final int notificationTypeSettings=0x7f090005;
-        public static final int notificationTypeVibrate=0x7f090009;
-        public static final int recordButton=0x7f090019;
-        public static final int soundSelectionTitle=0x7f09000f;
-        public static final int soundSettingsButton=0x7f090011;
-        public static final int soundTable=0x7f090010;
-        public static final int splash=0x7f090003;
-        public static final int splashOnOff=0x7f090014;
-        public static final int splashTitle=0x7f090013;
-        public static final int textView1=0x7f090015;
-        public static final int textView2=0x7f090017;
-        public static final int trainingButton=0x7f090012;
+        public static final int action_bar_home=0x7f0a001b;
+        public static final int action_bar_settings=0x7f0a001d;
+        public static final int action_bar_training=0x7f0a001c;
+        public static final int action_settings=0x7f0a001e;
+        public static final int alertColorBlue=0x7f0a000c;
+        public static final int alertColorGreen=0x7f0a000d;
+        public static final int alertColorPurple=0x7f0a000e;
+        public static final int alertColorRed=0x7f0a000b;
+        public static final int alertColorSettings=0x7f0a000a;
+        public static final int button1=0x7f0a0018;
+        public static final int container=0x7f0a0000;
+        public static final int imageView1=0x7f0a001a;
+        public static final int newSoundLabel=0x7f0a0016;
+        public static final int notificationScreenContainer=0x7f0a0001;
+        public static final int notificationSettingsTitle=0x7f0a0004;
+        public static final int notificationText=0x7f0a0002;
+        public static final int notificationTypeAlert=0x7f0a0008;
+        public static final int notificationTypeContainer=0x7f0a0006;
+        public static final int notificationTypePush=0x7f0a0007;
+        public static final int notificationTypeSettings=0x7f0a0005;
+        public static final int notificationTypeVibrate=0x7f0a0009;
+        public static final int recordButton=0x7f0a0019;
+        public static final int soundSelectionTitle=0x7f0a000f;
+        public static final int soundSettingsButton=0x7f0a0011;
+        public static final int soundTable=0x7f0a0010;
+        public static final int splash=0x7f0a0003;
+        public static final int splashOnOff=0x7f0a0014;
+        public static final int splashTitle=0x7f0a0013;
+        public static final int textView1=0x7f0a0015;
+        public static final int textView2=0x7f0a0017;
+        public static final int trainingButton=0x7f0a0012;
     }
     public static final class layout {
         public static final int activity_nav_action_bar=0x7f030000;
@@ -83,65 +83,71 @@ public final class R {
         public static final int fragment_nav_action_bar=0x7f030008;
     }
     public static final class menu {
-        public static final int nav_action_bar=0x7f080000;
-        public static final int notification__screen=0x7f080001;
-        public static final int sound_settings=0x7f080002;
-        public static final int splash_page=0x7f080003;
-        public static final int training_final=0x7f080004;
-        public static final int training_listen=0x7f080005;
-        public static final int training_menu=0x7f080006;
+        public static final int nav_action_bar=0x7f090000;
+        public static final int notification__screen=0x7f090001;
+        public static final int sound_settings=0x7f090002;
+        public static final int splash_page=0x7f090003;
+        public static final int training_final=0x7f090004;
+        public static final int training_listen=0x7f090005;
+        public static final int training_menu=0x7f090006;
+    }
+    public static final class raw {
+        public static final int feature_def=0x7f040000;
+        public static final int feature_val=0x7f040001;
+        public static final int features=0x7f040002;
+        public static final int mfccfeatures0=0x7f040003;
     }
     public static final class string {
-        public static final int Begin=0x7f050019;
-        public static final int Done=0x7f05001c;
-        public static final int OFF=0x7f050013;
-        public static final int ON=0x7f050006;
-        public static final int action_bar_home=0x7f050023;
-        public static final int action_bar_settings=0x7f050024;
-        public static final int action_bar_training=0x7f050025;
-        public static final int action_settings=0x7f050001;
-        public static final int addNewSound=0x7f050011;
-        public static final int alertColorBlue=0x7f05002d;
-        public static final int alertColorGreen=0x7f05002e;
-        public static final int alertColorPurple=0x7f05002f;
-        public static final int alertColorRed=0x7f05002c;
-        public static final int alertColorTitle=0x7f05002b;
-        public static final int app_name=0x7f050000;
-        public static final int backButton=0x7f05000f;
-        public static final int backGroundListener=0x7f050014;
-        public static final int colorBG=0x7f05000a;
-        public static final int colorGreen=0x7f050009;
-        public static final int colorPurple=0x7f05000b;
-        public static final int colorRed=0x7f05000d;
-        public static final int colorYellow=0x7f05000c;
-        public static final int hello_world=0x7f050002;
-        public static final int label_new_sound=0x7f050020;
-        public static final int mainMenu=0x7f050016;
-        public static final int msgWelcome=0x7f05000e;
-        public static final int notificationSettings=0x7f050012;
-        public static final int notificationSettingsTitle=0x7f050026;
-        public static final int notificationTypeAlert=0x7f050029;
-        public static final int notificationTypePush=0x7f05002a;
-        public static final int notificationTypeTitle=0x7f050027;
-        public static final int notificationTypeVibrate=0x7f050028;
-        public static final int save=0x7f050021;
-        public static final int soundSelectionTitle=0x7f050010;
-        public static final int splashSoundSettings=0x7f050008;
-        public static final int splashTraining=0x7f050007;
-        public static final int start=0x7f05001d;
-        public static final int sucess=0x7f05001f;
-        public static final int title_activity_nav_action_bar=0x7f050022;
-        public static final int title_activity_notification__screen=0x7f050015;
-        public static final int title_activity_notification_preferences=0x7f050031;
-        public static final int title_activity_sound_settings=0x7f050004;
-        public static final int title_activity_specific_sound_settings=0x7f050030;
-        public static final int title_activity_training_final=0x7f05001e;
-        public static final int title_activity_training_listen=0x7f05001a;
-        public static final int title_activity_training_menu=0x7f050003;
-        public static final int training_instruction=0x7f050018;
-        public static final int training_listen_title=0x7f05001b;
-        public static final int training_title=0x7f050017;
-        public static final int welcomeSplash=0x7f050005;
+        public static final int Begin=0x7f060019;
+        public static final int Done=0x7f06001c;
+        public static final int OFF=0x7f060013;
+        public static final int ON=0x7f060006;
+        public static final int action_bar_home=0x7f060023;
+        public static final int action_bar_settings=0x7f060024;
+        public static final int action_bar_training=0x7f060025;
+        public static final int action_settings=0x7f060001;
+        public static final int addNewSound=0x7f060011;
+        public static final int alertColorBlue=0x7f06002d;
+        public static final int alertColorGreen=0x7f06002e;
+        public static final int alertColorPurple=0x7f06002f;
+        public static final int alertColorRed=0x7f06002c;
+        public static final int alertColorTitle=0x7f06002b;
+        public static final int app_name=0x7f060000;
+        public static final int backButton=0x7f06000f;
+        public static final int backGroundListener=0x7f060014;
+        public static final int colorBG=0x7f06000a;
+        public static final int colorGreen=0x7f060009;
+        public static final int colorPurple=0x7f06000b;
+        public static final int colorRed=0x7f06000d;
+        public static final int colorYellow=0x7f06000c;
+        public static final int hello_world=0x7f060002;
+        public static final int label_new_sound=0x7f060020;
+        public static final int mainMenu=0x7f060016;
+        public static final int msgWelcome=0x7f06000e;
+        public static final int notificationSettings=0x7f060012;
+        public static final int notificationSettingsTitle=0x7f060026;
+        public static final int notificationTypeAlert=0x7f060029;
+        public static final int notificationTypePush=0x7f06002a;
+        public static final int notificationTypeTitle=0x7f060027;
+        public static final int notificationTypeVibrate=0x7f060028;
+        public static final int save=0x7f060021;
+        public static final int soundSelectionTitle=0x7f060010;
+        public static final int splashSoundSettings=0x7f060008;
+        public static final int splashTraining=0x7f060007;
+        public static final int start=0x7f06001d;
+        public static final int sucess=0x7f06001f;
+        public static final int title_activity_nav_action_bar=0x7f060022;
+        public static final int title_activity_notification__screen=0x7f060015;
+        public static final int title_activity_notification_preferences=0x7f060031;
+        public static final int title_activity_sound_settings=0x7f060004;
+        public static final int title_activity_specific_sound_settings=0x7f060030;
+        public static final int title_activity_training_final=0x7f06001e;
+        public static final int title_activity_training_listen=0x7f06001a;
+        public static final int title_activity_training_menu=0x7f060003;
+        public static final int training_instruction=0x7f060018;
+        public static final int training_listen_title=0x7f06001b;
+        public static final int training_title=0x7f060017;
+        public static final int welcomeSplash=0x7f060005;
     }
     public static final class style {
         /** 
@@ -165,10 +171,10 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f070000;
+        public static final int AppBaseTheme=0x7f080000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f070001;
+        public static final int AppTheme=0x7f080001;
     }
 }
