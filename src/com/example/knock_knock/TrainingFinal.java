@@ -1,6 +1,10 @@
 package com.example.knock_knock;
 
+import java.io.File;
+import java.io.IOException;
+
 import android.os.Bundle;
+import android.os.Environment;
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.NavUtils;
@@ -10,7 +14,10 @@ import android.view.View;
 import android.widget.EditText;
 
 public class TrainingFinal extends Activity {
-
+	
+	//Location of the newly created mfcc feature matrix
+	final static String FV_PATH = "mfcc_val.xml";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -40,9 +47,41 @@ public class TrainingFinal extends Activity {
 		EditText newSoundLabel = (EditText) findViewById(R.id.newSoundLabel);
 		String label = newSoundLabel.getText().toString();
 		PreferenceStorage.addSound(getSharedPreferences(SoundSettings.PREFS_NAME, 0), label);
-		
+		createNewTemplateFile(label);
 		Intent i = new Intent(this, SoundSettings.class);
 		startActivity(i);
+	}
+	
+	public void createNewTemplateFile(String path){
+		final String p =path+".xml";
+		Thread renameThread = new Thread(new Runnable() {
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				File reName = makeNewFile(p);
+				File cur = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).
+						getAbsolutePath()+File.separator+FV_PATH);
+				cur.renameTo(reName);
+			}
+			
+		});
+		renameThread.run();
+	}
+	
+	public File makeNewFile(String path){
+		File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath());
+		if(!dir.exists()){
+			dir.mkdir();
+		}
+		File f = new File(dir.getAbsolutePath() + File.separator + path);
+		try {
+			f.createNewFile();
+		} catch (IOException e1) {
+			System.out.println("Cant create new file: "+path);
+			e1.printStackTrace();
+		}
+		return f;
+		
 	}
 
 }
