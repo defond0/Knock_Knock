@@ -7,6 +7,7 @@ package com.example.knock_knock;
 
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -141,6 +142,7 @@ public class TrainingListen extends Activity {
 					
 					//use TarsosDsp MFCC to process signal
 					ap.process(ae);
+					
 					//save 30 floats that MFCC returns
 					featureValues[i]=ap.getMFCC();
 					
@@ -154,7 +156,6 @@ public class TrainingListen extends Activity {
 					long stop = System.currentTimeMillis();
 					System.out.println("Stop ~ "+stop);
 					System.out.println(stop-start);
-					printFeatureValues();
 				}
 				recorder.stop();
 				recorder.release();
@@ -163,14 +164,17 @@ public class TrainingListen extends Activity {
 				//Save Features
 				File FV = makeNewFile(FV_PATH);
 				saveFeatureValues(FV);
-				
+				if(debug){
+					checkFile(FV);
+				}
 			}
 			});
 			recordThread.run();	
 			
 	}
 	
-	///VARIOUS HELPER METHODS SOME FOR DEBUGGING SOME FOR ACTUAL STUFF		
+	///VARIOUS HELPER METHODS SOME FOR DEBUGGING SOME FOR ACTUAL STUFF 
+	/// some are not threaded, but should only be called from within threads
 	public be.hogent.tarsos.dsp.AudioFormat getFormat(){
 		be.hogent.tarsos.dsp.AudioFormat aF = new be.hogent.tarsos.dsp.AudioFormat(SAMPLE_RATE,16,1,true,false);
 		return aF;
@@ -255,17 +259,46 @@ public class TrainingListen extends Activity {
 		try {
 			dos = new DataOutputStream(new FileOutputStream(f));
 		} catch (FileNotFoundException e1) {
-			System.out.println("Fos error with " + f.getPath());
+			System.out.println("DOS error with " + f.getPath());
 			e1.printStackTrace();
 		}
 		return dos;
 	}
+	
+	public DataInputStream makeDIS(File f){
+		DataInputStream dis = null;
+		try {
+			dis = new DataInputStream(new FileInputStream(f));
+		} catch (FileNotFoundException e1) {
+			System.out.println("DIS error with " + f.getPath());
+			e1.printStackTrace();
+		}
+		return dis;
+		
+	}
+	
+	public void checkFile(File f){
+		System.out.println("FILE CHECK "+f.getPath());
+		DataInputStream dis = makeDIS(f);
+		float[][] fl = new float[numWindows][30];
+		for (int i=0;i<numWindows;i++){
+			for (int j=0; j<30;j++){
+				try {
+					fl[i][j]=dis.readFloat();
+				} catch (IOException e) {
+					System.out.println("CheckFile Error in ReadFloat");
+					e.printStackTrace();
+				}
+			}
+		}
+		printFeatureValues(fl);
+	}
 
-	public void printFeatureValues(){
+	public void printFeatureValues(float[][] f){
 		System.out.println("CHECKING FEATURE VAULES");
 		int i = 0;
 		for (i=0;i<numWindows;i++){
-			printMFCC(featureValues[i],i);
+			printMFCC(f[i],i);
 		}
 	}
 	
