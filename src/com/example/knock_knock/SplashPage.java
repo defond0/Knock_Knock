@@ -24,11 +24,11 @@ public class SplashPage extends Activity {
 
 		// checks prefs to alert us if we are listening
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		setListening(prefs.getBoolean("listening", false));
+		setListening(PreferenceStorage.getIsRec(prefs));
 
 		// initialize buttons (jic)
 		onOff = (ToggleButton) findViewById(R.id.splashOnOff);
-
+		onOff.setChecked(isListening());
 		onOff.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
@@ -39,7 +39,6 @@ public class SplashPage extends Activity {
 				}
 			}
 		});
-
 		soundSettings = (Button) findViewById(R.id.soundSettingsButton);
 		training = (Button) findViewById(R.id.trainingButton);
 	}
@@ -48,7 +47,7 @@ public class SplashPage extends Activity {
 	protected void onResume() {
 		super.onResume();
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		setListening(prefs.getBoolean("listening", false));
+		setListening(PreferenceStorage.getIsRec(prefs));
 		if (isListening()) {
 			onOff.setChecked(true);
 		} else {
@@ -58,14 +57,7 @@ public class SplashPage extends Activity {
 
 	@Override
 	protected void onStop() {
-		super.onStop();
-		// We need an Editor object to make preference changes.
-		// All objects are from android.context.Context
-		SharedPreferences settings = getSharedPreferences(PREFS_NAME, 0);
-		SharedPreferences.Editor editor = settings.edit();
-		// saves if we are listening
-		editor.putBoolean("listening", isListening());
-		editor.commit();
+		super.onStop();               
 	}
 
 	@Override
@@ -89,12 +81,16 @@ public class SplashPage extends Activity {
 
 	public void startListening() {
 		setListening(true);
+		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+		PreferenceStorage.setIsRec(prefs,isListening());
 		Intent i = new Intent(this, backGroundListener.class);
 		this.startService(i);
 	}
 
 	public void stopListenting() {
 		setListening(false);
+		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+		PreferenceStorage.setIsRec(prefs,isListening());
 		Intent i = new Intent(this, backGroundListener.class);
 		this.stopService(i);
 	}

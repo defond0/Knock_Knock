@@ -50,15 +50,18 @@ public class backGroundListener extends Service {
 	private float[][] inputValues;
 	private HashMap <String,float[][]> soundIndex;
 	private HashMap <String,float[]> curDots;
+	private HashMap <String,float[]> averageConvolution;
 	private SharedPreferences prefs;
 	private float convolution;
+	private static double THRESHOLD =2.25;
+	private float stDev,avg;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 	    //TODO do something useful
 		rec = true;
 		//Get SharedPreferences and loud up sounds
-		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+		prefs = getSharedPreferences(PREFS_NAME, 0);
 		checkedSounds = PreferenceStorage.getAllCheckedSounds(prefs);
 		prefs = getSharedPreferences(PREFS_NAME, 0);
 		listen();
@@ -72,17 +75,15 @@ public class backGroundListener extends Service {
 	}
 	
 	public void notify(String sound){
-		rec = false;
-		boolean vibe = true;// PreferenceStorage.isVibrateNotifOn(prefs, sound);
 		boolean alert = true;//PreferenceStorage.isAlertNotifOn(prefs, sound);
 		boolean push = true;//PreferenceStorage.isPushNotifOn(prefs,sound);
+		boolean vibe = true;// PreferenceStorage.isVibrateNotifOn(prefs, sound);
 		if(alert){
 			System.out.println("Alert");
 			Intent i = new Intent(this, Notification_Screen.class);
 			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			i.putExtra(SOUND_NAME, sound);
 			startActivity(i);
-			//this.stopSelf();
 		}
 		if(push){
 			System.out.println("PUSH     to Do");
@@ -90,6 +91,7 @@ public class backGroundListener extends Service {
 		if(vibe){
 			System.out.println("VIBE     to Do");
 		}
+		this.stopSelf();
 	}
 	
 	private void listen(){	
@@ -116,13 +118,14 @@ public class backGroundListener extends Service {
 				//start recording
 				recorder.startRecording();
 				
-				
-				
 				//Recording Loop
 				int cc = 0;
 				int i =0;
 				while (rec){
 					//read recorder
+					if(i==0){
+						System.out.println("Start of Window "+cc+" at "+System.currentTimeMillis());
+					}
 					long res = recorder.read(buffer, 0, buffer.length);
 					
 					//create audio event
@@ -144,49 +147,71 @@ public class backGroundListener extends Service {
 					//loop maintenance 
 					i+=1;
 					if(!(i<numWindows)){
-						i=0;
+						
 						Iterator<String> soundIter = checkedSounds.iterator();
 						float[] v = new float[numWindows];
 						while(soundIter.hasNext()){
 							String curSound = soundIter.next();
 							v = curDots.get(curSound);
 							convolution = sum(v);
-							System.out.println("Current dotProduct for sound " +curSound + " sum over window "+cc+": "+convolution);
-							if (convolution>=500000){
-								System.out.println(curSound+"  pinged on window "+ cc);
-								backGroundListener.this.notify(curSound);
-								rec = false;
+							float[] f=backGroundListener.this.averageConvolution.get(curSound);
+							
+							float[] shift = new float[f.length-1];
+							for(i=0;i<shift.length;i++){
+								shift[i]=f[i];
 							}
+							
+							f[0] = convolution;
+							for (i=0;i<shift.length;i++){
+								f[i+1]=shift[i];
+							}	
+														
+							float avg = avg(f,cc);
+							stDev = stDev(f,cc);
+							if(((convolution-avg)>=stDev*THRESHOLD)&&cc>4){
+								System.out.println("Detected at "+System.currentTimeMillis());
+								backGroundListener.this.notify(curSound);
+								SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+								PreferenceStorage.setIsRec(prefs,false);	
+							}
+											
+							System.out.println("Current dotProduct for sound " +curSound + 
+									" sum over window "+cc+": "+convolution +" stDev: "+stDev+" average: "+avg);
+							backGroundListener.this.averageConvolution.put(curSound,f);
 							cc+=1;
+							i=0;
 						}
 					}
+					rec=PreferenceStorage.getIsRec(prefs);
 				}
 				recorder.stop();
 				recorder.release();
 				recorder = null;
 			}
 		});
-		listen.start();
+		listen.run();
 	}
-
+	
 	public void loadSoundIndex(){
 		Thread load = new Thread(new Runnable(){
 			@Override
 			public void run(){	
 				HashMap <String,float[][]> tmpDex = new HashMap<String,float[][]>();
 				HashMap <String,float[]> tmpDots = new HashMap<String,float[]>();
+				HashMap <String,float[]> tmpAvg = new HashMap<String,float[]>();
 				//Load sound selection preferences
 				Iterator<String> soundIter = checkedSounds.iterator();
 				while(soundIter.hasNext()){
-					
 					String curSound = soundIter.next();
 					File curFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).
 							getAbsolutePath()+File.separator+curSound+".xml");
 					tmpDex.put(curSound,getMatrixFromFile(curFile));
 					tmpDots.put(curSound, new float[numWindows]);
+					tmpAvg.put(curSound, new float[3]);
 				}
 				soundIndex = tmpDex;
 				curDots = tmpDots;
+				averageConvolution = tmpAvg;
 			}
 		});
 		load.run();
@@ -282,6 +307,35 @@ public class backGroundListener extends Service {
 			s+=f1[i];
 		}
 		return s;
+	}
+
+	public float avg(float[] f1, int cc){
+		int l = f1.length;
+		float s = 0;
+		for (int i=0;i<l;i++){
+			s+=f1[i];
+		}
+		if(cc<=3){
+			if(f1[1]==0){
+				l-=1;
+			}
+			if(f1[1]==0){
+				l-=1;
+			}
+		}
+		return s/l;
+	}
+		
+	public float stDev(float[] f, int cc){
+		float avg = avg(f, cc);
+		int l = f.length;
+		float [] difs = new float[l];
+		for (int i=0; i<l; i++){
+			difs[i]=(f[i]-avg);
+		}
+		float std = (sum(difs))/l;
+		return std;
+		
 	}
 	
 	public void printFeatureValues(float[][] f){
