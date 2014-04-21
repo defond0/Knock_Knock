@@ -60,7 +60,7 @@ public class backGroundListener extends Service implements OnsetHandler, PitchDe
 		final AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
 		
 		//set up "clap" detector //
-		final PercussionOnsetDetector pd = new PercussionOnsetDetector(SAMPLE_RATE, bufferSize/2, this, 16, 8);
+		final PercussionOnsetDetector pd = new PercussionOnsetDetector(SAMPLE_RATE, bufferSize/2, this, 60, 6);
 		
 		//set up "all" detector //
 		final PitchProcessor pp = new PitchProcessor( PitchProcessor.PitchEstimationAlgorithm.AMDF,SAMPLE_RATE,bufferSize,this);

@@ -44,6 +44,12 @@ public class PreferenceStorage {
 		setAllSounds(prefs, allSounds);
 	}
 	
+	public static void delSound(SharedPreferences prefs, String soundName) {
+		Set<String> allSounds = getAllSounds(prefs);
+		allSounds.remove(soundName);
+		setAllSounds(prefs, allSounds);
+	}
+	
 	public static void setAllSounds(SharedPreferences prefs, Set<String> allSounds) {
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putStringSet(PreferenceStorage.ALL_SOUNDS, allSounds);
