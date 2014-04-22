@@ -60,7 +60,7 @@ public final class R {
         public static final int button1=0x7f090019;
         public static final int container=0x7f090000;
         public static final int imageView1=0x7f090012;
-        public static final int newSoundLabel=0x7f090017;
+        public static final int newSoundLabel=0x7f090018;
         public static final int notificationScreenContainer=0x7f090001;
         public static final int notificationSettingsTitle=0x7f090004;
         public static final int notificationText=0x7f090002;
@@ -76,7 +76,7 @@ public final class R {
         public static final int splash=0x7f090003;
         public static final int splashOnOff=0x7f090013;
         public static final int textView1=0x7f090016;
-        public static final int textView2=0x7f090018;
+        public static final int textView2=0x7f090017;
         public static final int trainingButton=0x7f090014;
     }
     public static final class layout {

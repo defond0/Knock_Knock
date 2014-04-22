@@ -1,7 +1,11 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background = "@color/blue1"
+    android:gravity="center"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -9,34 +13,34 @@
     tools:context=".TrainingMenu" >
 
     <TextView
-        android:id="@+id/textView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="26dp"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        android:text="@string/training_instruction" />
-
-    <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="30dp"
+        android:layout_height="0dp"
+        android:layout_weight="0.166667"
         android:text="@string/training_title"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+    
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="0.66667"
+        android:gravity = "center"
+        android:textSize = "15dp"
+        android:paddingLeft="30dp"
+        android:paddingRight="30dp"
+        android:textColor = "#FFFFFF"
+        android:text="@string/training_instruction" />
+
+    
 
     <Button
         android:id="@+id/recordButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView2"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="120dp"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.166667"
+        android:background = "@color/blue2"
         android:onClick="toTrainListen"
         android:text="@string/Begin" />
 
-</RelativeLayout>
+</LinearLayout>
