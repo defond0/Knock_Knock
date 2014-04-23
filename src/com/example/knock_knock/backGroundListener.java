@@ -118,6 +118,7 @@ public class backGroundListener extends Service {
 		boolean push = PreferenceStorage.isPushNotifOn(prefs,curSound);
 		boolean vibe = false;//PreferenceStorage.isVibrateNotifOn(prefs, curSound);
 		
+<<<<<<< HEAD
 	
 //		if(vibe){
 //			System.out.println("VIBE");
@@ -136,6 +137,10 @@ public class backGroundListener extends Service {
 		if(push){
 			System.out.println("PUSH     to Do");
 		}
+=======
+		//set up "clap" detector //
+		final PercussionOnsetDetector pd = new PercussionOnsetDetector(SAMPLE_RATE, bufferSize/2, this, 60, 6);
+>>>>>>> master
 		
 	}
 	

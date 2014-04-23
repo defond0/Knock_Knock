@@ -84,6 +84,18 @@ public class SplashPage extends Activity {
 		Intent i = new Intent(this, SoundSettings.class);
 		startActivity(i);
 	}
+	
+	public final static String EXTRA_MESSAGE = "com.example.backGroundList.MESSAGE";
+	public final static String SOUND_NAME = "com.example.backGroundList.SOUNDNAME";
+	
+	public void openNotification(View view) {
+		String notification = "Clap";
+		Intent i = new Intent(this, Notification_Screen.class);
+		i.putExtra(EXTRA_MESSAGE, notification);
+		//fix once we can detect different sounds
+		i.putExtra(SOUND_NAME, notification);
+	    startActivity(i);
+	}
 
 	public void startListening() {
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);

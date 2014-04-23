@@ -82,12 +82,27 @@ public class SoundSettings extends Activity {
 			
 			//Settings button for sound
 			Button settings = new Button(this);
-			settings.setText("Settings");
+			//settings.setText("Settings");
+			settings.setBackgroundResource(R.drawable.ic_action_edit);
 			settings.setOnClickListener(new OnClickListener() {
 
 				@Override
 				public void onClick(View v) {
 					toNotificationPreferences(curSound);			
+				}
+				
+			});
+			
+			Button delete = new Button(this);
+			//settings.setText("Settings");
+			delete.setBackgroundResource(R.drawable.ic_action_discard);
+			delete.setOnClickListener(new OnClickListener() {
+
+				@Override
+				public void onClick(View v) {
+					PreferenceStorage.delSound(prefs, curSound);
+					finish(); //TODO: refresh activity from within or redraw activity
+					startActivity(getIntent());
 				}
 				
 			});
@@ -99,7 +114,7 @@ public class SoundSettings extends Activity {
 			toggle.setLayoutParams(params);*/
 			
 			//Add color 
-			int color =Color.parseColor(PreferenceStorage.getAlertColor(prefs,curSound));
+			int color = Color.parseColor(PreferenceStorage.getAlertColor(prefs,curSound));
 			Button colorBox = new Button(this);
 			colorBox.setBackgroundColor(color);
 			colorBox.setOnClickListener(new OnClickListener() {
@@ -117,6 +132,7 @@ public class SoundSettings extends Activity {
 			curRow.addView(text);
 			curRow.addView(colorBox);
 			curRow.addView(settings);
+			curRow.addView(delete);
 			soundTable.addView(curRow);
 		}
 	}

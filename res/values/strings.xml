@@ -7,7 +7,12 @@
     <string name="title_activity_training_menu">TrainingMenu</string>
     <string name="title_activity_sound_settings">SoundSettings</string>
     <string name="welcomeSplash">Knock-Knock</string>
-    <string name="ON">ON</string>
+    <string name="ON">Turn Listening Off</string>
+    <string name="OFF">Turn Listening On</string>
+    <color name="blue1">#299ACC</color>
+    <color name="blue2">#5BA9DD</color>
+    <color name="blue3">#84B9E4</color>
+    <color name="blue4">#ACCDEC</color>
     <string name="splashTraining">Add New Sound</string>
     <string name="splashSoundSettings">Sound Settings</string>
     <string name="colorGreen">#17C700</string>
@@ -20,7 +25,6 @@
     <string name="soundSelectionTitle">Sound Selection</string>
     <string name="addNewSound">Add New Sound</string>
     <string name="notificationSettings">Notification Settings</string>
-    <string name="OFF">OFF</string>
     <string name="backGroundListener">backGroundListener</string>
     <string name="title_activity_notification__screen">Notification_Screen</string>
     <string name="mainMenu">Main Menu</string>

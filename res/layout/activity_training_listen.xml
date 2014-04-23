@@ -1,8 +1,12 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/blue1"
     android:onClick="recordHandler"
+    android:orientation="vertical"
+    android:gravity = "center"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
@@ -12,30 +16,30 @@
     <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
+        android:layout_height="0dp"
         android:layout_marginTop="30dp"
+        android:layout_weight="0.166667"
         android:text="@string/training_listen_title"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
-    <Button
-        android:id="@+id/recordButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/imageView1"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp"
-        android:onClick="recordHandler"
-        android:text="@string/start" />
 
     <ImageView
         android:id="@+id/imageView1"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/textView1"
-        android:layout_centerHorizontal="true"
+        android:layout_height="0dp"
         android:layout_marginTop="16dp"
+        android:layout_weight="0.66666"
         android:src="@drawable/audio_placeholder" />
+    
+    <Button
+        android:id="@+id/recordButton"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:layout_weight="0.166667"
+        android:background="@color/blue2"
+        android:onClick="recordHandler"
+        android:text="@string/start" />
 
-</RelativeLayout>
+    
+
+</LinearLayout>
