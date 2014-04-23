@@ -29,7 +29,7 @@ import android.os.Vibrator;
 public class backGroundListener extends Service {
 	//http://www.vogella.com/tutorials/AndroidServices/article.html
 	
-	
+	final static boolean debug=false;
 	final static int SAMPLE_RATE = 16000;
 	private byte[] buffer;
 	private int bufferSize;
@@ -52,52 +52,41 @@ public class backGroundListener extends Service {
 	private float Prev_CONVO;
 	private float Max_CONVO;
 	private boolean detected;
+	private int Id;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
 		prefs = getSharedPreferences(PREFS_NAME, 0);
-		detected= false;
+		Id=startId;
+		detected = PreferenceStorage.getDetected(prefs);
 		if(PreferenceStorage.getDetected(prefs)){
-			stopSelf();
+			stopSelf(Id);
 		}
 		Bundle b = intent.getExtras();
 		curSound = "";
 		if(b!=null){
 			if(b.getString("sound") != null){
-        
 				curSound = b.getString("sound");
+				Prev_CONVO=PreferenceStorage.getCurConvo(prefs,curSound);
+				Max_CONVO=PreferenceStorage.getMaxConvo(prefs,curSound);
+				
+				loadVariables();
+				setupRecorder();	
+				tarForm = getFormat();
+				
+				if((!(Prev_CONVO*1.1>=Max_CONVO))&&(curSound!="")&&(!detected)){
+					listen();
+					notification=curSound;
+					//System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					//System.out.println(curSound);
+				}
 			}
 		}
 	    else{
-	    	stopSelf();
+	    	stopSelf(Id);
 	    }
-		
-	    	notification=curSound;
-	   
-	    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~");
-	    System.out.println(curSound);
-		
-	    Prev_CONVO=PreferenceStorage.getCurConvo(prefs,curSound);
-		Max_CONVO=PreferenceStorage.getMaxConvo(prefs,curSound);
-		
-		
-		secs = recTime/1000;
-		bufferSize = AudioRecord.getMinBufferSize(
-        		SAMPLE_RATE,
-        		AudioFormat.CHANNEL_IN_MONO,
-        		AudioFormat.ENCODING_PCM_16BIT);
-		numSamples = secs*SAMPLE_RATE;
-		nS = (int)(long)numSamples;
-		numVectors =(((nS/bufferSize)+1)*2)+12;
-		
-		setupRecorder();	
-		tarForm = getFormat();
-		listen();
 		return super.onStartCommand(intent,flags,startId);
-		
-		
 	  }
-	
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -107,25 +96,34 @@ public class backGroundListener extends Service {
 	
 	@Override
 	public void onDestroy(){
+		System.out.println("ding");
 		stopService(new Intent(this, backGroundListener.class));
 		super.onDestroy() ;
+	}
+	
+	public void loadVariables(){
+		secs = recTime/1000;
+		bufferSize = AudioRecord.getMinBufferSize(
+        		SAMPLE_RATE,
+        		AudioFormat.CHANNEL_IN_MONO,
+        		AudioFormat.ENCODING_PCM_16BIT);
+		numSamples = secs*SAMPLE_RATE;
+		nS = (int)(long)numSamples;
+		numVectors =(((nS/bufferSize)+1)*2)+12;
 	}
 	
 	public void detected(){
 		detected = true;
 		PreferenceStorage.setDetected(prefs,detected);
 		boolean alert = PreferenceStorage.isAlertNotifOn(prefs, curSound);
-		boolean push = PreferenceStorage.isPushNotifOn(prefs,curSound);
-		boolean vibe = false;//PreferenceStorage.isVibrateNotifOn(prefs, curSound);
-		
-<<<<<<< HEAD
+		boolean vibe = PreferenceStorage.isVibrateNotifOn(prefs, curSound);
 	
-//		if(vibe){
-//			System.out.println("VIBE");
-//			Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
-//			// Vibrate for 500 milliseconds
-//			v.vibrate(500);
-//		}
+		if(vibe){
+			System.out.println("VIBE");
+			Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+			// Vibrate for 500 milliseconds
+			v.vibrate(200);
+		}
 		if(alert){
 			System.out.println("Alert");
 			Intent i = new Intent(this, Notification_Screen.class);
@@ -133,14 +131,6 @@ public class backGroundListener extends Service {
 			i.putExtra("notification", notification);
 			startActivity(i);
 		}
-
-		if(push){
-			System.out.println("PUSH     to Do");
-		}
-=======
-		//set up "clap" detector //
-		final PercussionOnsetDetector pd = new PercussionOnsetDetector(SAMPLE_RATE, bufferSize/2, this, 60, 6);
->>>>>>> master
 		
 	}
 	
@@ -173,7 +163,7 @@ public class backGroundListener extends Service {
 				int cc = 0;
 				while (cur<rec){
 					if(!detected && cc==1){
-						System.out.println("Spawning new intent "+curSound+"Listener at "+System.currentTimeMillis());
+						//System.out.println("Spawning new intent "+curSound+"Listener at "+System.currentTimeMillis());
 						Intent i = new Intent(backGroundListener.this, backGroundListener.class);
 						i.putExtra("sound",curSound);
 						backGroundListener.this.startService(i);
@@ -202,36 +192,36 @@ public class backGroundListener extends Service {
 					inputValuesMatrix[c][31]= 0; //zero padding
 					convoluteFFT(inputValuesMatrix[c],templateMatrix[c],c);
 					PreferenceStorage.setCurConvo(prefs,curSound,Cur_CONVO);
-				
-					/*
-					 * this is where it happens, do we detect or dont we?
-					 */
-					if(Cur_CONVO*1.1>=Max_CONVO){
-						detected();
-						stopService(new Intent(backGroundListener.this, backGroundListener.class));
-						stopSelf();
-					}
-					if(Prev_CONVO*1.1>=Max_CONVO){
-						stopService(new Intent(backGroundListener.this, backGroundListener.class));
-						stopSelf();
-					}
 					cc+=1;	
-					cur = System.currentTimeMillis();			
+					cur = System.currentTimeMillis();					
 				}
-				
+				/*
+				 * this is where it happens, do we detect or dont we?
+				 */
+				if(Cur_CONVO*1.1>=Max_CONVO){
+					detected();
+					System.out.println("herp");
+					stopService(new Intent(backGroundListener.this, backGroundListener.class));
+					stopSelf(Id);
+					
+				}
+				if(debug){
 				System.out.println("done at: "+cur);
 				System.out.println("PrevConvo: " + Prev_CONVO);
 				System.out.println("CurConvo: "+Cur_CONVO);
 				System.out.println("MaxConvo: "+Max_CONVO);
 				//System.out.println("detected: " +detected);
 				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~");
+				}
 				recorder.stop();			
 				recorder.release();
 				recorder = null;
-				backGroundListener.this.stopSelf();
+				backGroundListener.this.stopSelf(Id);
 			}
 		});
 		listen.run();
+		listen.interrupt();
+		listen=null;
 	}
 	
 	public void convoluteFFT(float [] incoming, float[]template, int c){

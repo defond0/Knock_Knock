@@ -35,7 +35,7 @@ public class SplashPage extends Activity {
 
 		// initialize buttons (jic)
 		onOff = (ToggleButton) findViewById(R.id.splashOnOff);
-		onOff.setChecked(false);
+		onOff.setChecked(!r);
 		onOff.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
