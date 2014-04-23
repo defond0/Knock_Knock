@@ -19,17 +19,40 @@ public class PreferenceStorage {
 	public static final String PUSH_NOTIF = "_push";
 	public static final String ALERT_NOTIF = "_alert";
 	public static final String VIBRATE_NOTIF = "_vibrate";
-	public static final String IS_RECORDING = "_rec";
+	public static final String DETECTED = "_detected";
+	public static final String MAX_CONVOLUTION = "_maxConvo";
+	public static final String CUR_CONVOLUTION = "_curConvo";
 	//public static final String[] DEFAULT_SOUNDS = {"Clap", "Whistle", "Dummy0", "Dummy1" };
 	public static final String[] DEFAULT_SOUNDS = {};
 	
-	public static boolean getIsRec(SharedPreferences prefs){
-		return prefs.getBoolean(PreferenceStorage.IS_RECORDING,false);
+	
+	public static float getMaxConvo(SharedPreferences prefs, String S){
+		return prefs.getFloat(PreferenceStorage.MAX_CONVOLUTION+S, 0);
 	}
 	
-	public static void setIsRec(SharedPreferences prefs, boolean b){
+	public static void setMaxConvo(SharedPreferences prefs, String S, float f){
 		SharedPreferences.Editor editor = prefs.edit();
-	    editor.putBoolean(PreferenceStorage.IS_RECORDING, b);
+	    editor.putFloat(PreferenceStorage.MAX_CONVOLUTION+S, f);
+	    editor.commit();
+	}
+	
+	public static float getCurConvo(SharedPreferences prefs, String S){
+		return prefs.getFloat(PreferenceStorage.CUR_CONVOLUTION+S, 0);
+	}
+	
+	public static void setCurConvo(SharedPreferences prefs, String S, float f){
+		SharedPreferences.Editor editor = prefs.edit();
+	    editor.putFloat(PreferenceStorage.CUR_CONVOLUTION+S, f);
+	    editor.commit();
+	}
+	
+	public static boolean getDetected(SharedPreferences prefs){
+		return prefs.getBoolean(PreferenceStorage.DETECTED,false);
+	}
+	
+	public static void setDetected(SharedPreferences prefs, boolean b){
+		SharedPreferences.Editor editor = prefs.edit();
+	    editor.putBoolean(PreferenceStorage.DETECTED, b);
 	    editor.commit();
 	}
 	

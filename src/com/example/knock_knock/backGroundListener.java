@@ -5,19 +5,13 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+
 
 import be.hogent.tarsos.dsp.AudioEvent;
 import be.hogent.tarsos.dsp.mfcc.MFCC;
-import be.hogent.tarsos.dsp.onsets.ComplexOnsetDetector;
-import be.hogent.tarsos.dsp.onsets.OnsetHandler;
-import be.hogent.tarsos.dsp.onsets.PercussionOnsetDetector;
-import be.hogent.tarsos.dsp.pitch.PitchDetectionHandler;
-import be.hogent.tarsos.dsp.pitch.PitchDetectionResult;
-import be.hogent.tarsos.dsp.pitch.PitchProcessor;
+import be.hogent.tarsos.dsp.util.fft.FloatFFT;
+
+import android.app.ActivityManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -25,8 +19,10 @@ import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
+import android.os.Vibrator;
 
 
 
@@ -38,35 +34,70 @@ public class backGroundListener extends Service {
 	private byte[] buffer;
 	private int bufferSize;
 	private be.hogent.tarsos.dsp.AudioFormat tarForm;
-	private boolean rec;
-	private Set<String> checkedSounds;
+	private String curSound;
 	public final static String EXTRA_MESSAGE = "com.example.backGroundList.MESSAGE";
 	public final static String SOUND_NAME = "com.example.backGroundList.SOUNDNAME";
 	public static final String PREFS_NAME = "KnockKnockPrefs";
 	private String notification;
 	private AudioRecord recorder;
-	final static long recTime = 5000; //just here for now TODO place in prefs
-	private int numWindows;
-	private float[][] inputValues;
-	private HashMap <String,float[][]> soundIndex;
-	private HashMap <String,float[]> curDots;
-	private HashMap <String,float[]> averageConvolution;
+	final static long recTime = 2500; 
+	private int numVectors;
+	private float[][] inputValuesMatrix;
 	private SharedPreferences prefs;
-	private float convolution;
-	private static double THRESHOLD =2.25;
-	private float stDev,avg;
+	private long secs ;
+	private long numSamples ;
+	private int nS;
+	private MFCC ap;
+	private float Cur_CONVO;
+	private float Prev_CONVO;
+	private float Max_CONVO;
+	private boolean detected;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-	    //TODO do something useful
-		rec = true;
-		//Get SharedPreferences and loud up sounds
 		prefs = getSharedPreferences(PREFS_NAME, 0);
-		checkedSounds = PreferenceStorage.getAllCheckedSounds(prefs);
-		prefs = getSharedPreferences(PREFS_NAME, 0);
+		detected= false;
+		if(PreferenceStorage.getDetected(prefs)){
+			stopSelf();
+		}
+		Bundle b = intent.getExtras();
+		curSound = "";
+		if(b!=null){
+			if(b.getString("sound") != null){
+        
+				curSound = b.getString("sound");
+			}
+		}
+	    else{
+	    	stopSelf();
+	    }
+		
+	    	notification=curSound;
+	   
+	    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~");
+	    System.out.println(curSound);
+		
+	    Prev_CONVO=PreferenceStorage.getCurConvo(prefs,curSound);
+		Max_CONVO=PreferenceStorage.getMaxConvo(prefs,curSound);
+		
+		
+		secs = recTime/1000;
+		bufferSize = AudioRecord.getMinBufferSize(
+        		SAMPLE_RATE,
+        		AudioFormat.CHANNEL_IN_MONO,
+        		AudioFormat.ENCODING_PCM_16BIT);
+		numSamples = secs*SAMPLE_RATE;
+		nS = (int)(long)numSamples;
+		numVectors =(((nS/bufferSize)+1)*2)+12;
+		
+		setupRecorder();	
+		tarForm = getFormat();
 		listen();
 		return super.onStartCommand(intent,flags,startId);
+		
+		
 	  }
+	
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
@@ -74,194 +105,190 @@ public class backGroundListener extends Service {
 		return null;
 	}
 	
-	public void notify(String sound){
-		boolean alert = true;//PreferenceStorage.isAlertNotifOn(prefs, sound);
-		boolean push = true;//PreferenceStorage.isPushNotifOn(prefs,sound);
-		boolean vibe = true;// PreferenceStorage.isVibrateNotifOn(prefs, sound);
+	@Override
+	public void onDestroy(){
+		stopService(new Intent(this, backGroundListener.class));
+		super.onDestroy() ;
+	}
+	
+	public void detected(){
+		detected = true;
+		PreferenceStorage.setDetected(prefs,detected);
+		boolean alert = PreferenceStorage.isAlertNotifOn(prefs, curSound);
+		boolean push = PreferenceStorage.isPushNotifOn(prefs,curSound);
+		boolean vibe = false;//PreferenceStorage.isVibrateNotifOn(prefs, curSound);
+		
+	
+//		if(vibe){
+//			System.out.println("VIBE");
+//			Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+//			// Vibrate for 500 milliseconds
+//			v.vibrate(500);
+//		}
 		if(alert){
 			System.out.println("Alert");
 			Intent i = new Intent(this, Notification_Screen.class);
 			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			i.putExtra(SOUND_NAME, sound);
+			i.putExtra("notification", notification);
 			startActivity(i);
 		}
+
 		if(push){
 			System.out.println("PUSH     to Do");
 		}
-		if(vibe){
-			System.out.println("VIBE     to Do");
-		}
-		this.stopSelf();
+		
 	}
 	
 	private void listen(){	
 		
 		Thread listen = new Thread(new Runnable(){
 			@Override
-			public void run(){	
-				//set up recorder
-				setupRecorder();
+			public void run(){
+				//android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_LOWEST);
+				SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+				Cur_CONVO=0;
+				//Set up float array for storing the mfccs as they are calculated
+				inputValuesMatrix=new float[numVectors][32];
+				float[][] templateMatrix= getMatrixFromFile(new File(Environment.getExternalStoragePublicDirectory(
+						Environment.DIRECTORY_MUSIC).
+						getAbsolutePath()+File.separator+curSound+".xml"));
 				
 				//Set up mfcc extractor
-				MFCC ap = new MFCC(buffer.length/2,SAMPLE_RATE);
-				tarForm = getFormat();
-				AudioEvent ae = null;
+				ap = new MFCC(bufferSize/2,SAMPLE_RATE);
 				
-				//Set up float array for storing the mfccs as they are calculated
-				long secs = recTime/1000;
-				long numSamples = secs*SAMPLE_RATE;
-				int nS = (int)(long)numSamples;
-				numWindows =(((nS/bufferSize)+1)*2);
-				inputValues=new float[numWindows][30];
-				loadSoundIndex();
-
+				AudioEvent ae = null;
+			
 				//start recording
 				recorder.startRecording();
 				
 				//Recording Loop
+				long cur = System.currentTimeMillis();
+				System.out.println("Starting at: "+cur);
+				long rec = cur + recTime;
 				int cc = 0;
-				int i =0;
-				while (rec){
-					//read recorder
-					if(i==0){
-						System.out.println("Start of Window "+cc+" at "+System.currentTimeMillis());
+				while (cur<rec){
+					if(!detected && cc==1){
+						System.out.println("Spawning new intent "+curSound+"Listener at "+System.currentTimeMillis());
+						Intent i = new Intent(backGroundListener.this, backGroundListener.class);
+						i.putExtra("sound",curSound);
+						backGroundListener.this.startService(i);
 					}
+					
+					//read recorder
 					long res = recorder.read(buffer, 0, buffer.length);
 					
 					//create audio event
 					ae = new AudioEvent(tarForm, res);
 					
-					//Set over lap (this needs work)
+					//Set overlap (this needs work)
 					ae.setOverlap(buffer.length/4);
 					ae.setFloatBufferWithByteBuffer(buffer);
 					
 					//use TarsosDsp MFCC to process signal
 					ap.process(ae);
 					
+					
+					int c = cc%numVectors;
 					//save 30 floats that MFCC returns
-					inputValues[i]=ap.getMFCC();
-					
-					//get dot product of newly 
-					detectDotProducts(i);
-					
-					//loop maintenance 
-					i+=1;
-					if(!(i<numWindows)){
-						
-						Iterator<String> soundIter = checkedSounds.iterator();
-						float[] v = new float[numWindows];
-						while(soundIter.hasNext()){
-							String curSound = soundIter.next();
-							v = curDots.get(curSound);
-							convolution = sum(v);
-							float[] f=backGroundListener.this.averageConvolution.get(curSound);
-							
-							float[] shift = new float[f.length-1];
-							for(i=0;i<shift.length;i++){
-								shift[i]=f[i];
-							}
-							
-							f[0] = convolution;
-							for (i=0;i<shift.length;i++){
-								f[i+1]=shift[i];
-							}	
-														
-							float avg = avg(f,cc);
-							stDev = stDev(f,cc);
-							if(((convolution-avg)>=stDev*THRESHOLD)&&cc>4){
-								System.out.println("Detected at "+System.currentTimeMillis());
-								backGroundListener.this.notify(curSound);
-								SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-								PreferenceStorage.setIsRec(prefs,false);	
-							}
-											
-							System.out.println("Current dotProduct for sound " +curSound + 
-									" sum over window "+cc+": "+convolution +" stDev: "+stDev+" average: "+avg);
-							backGroundListener.this.averageConvolution.put(curSound,f);
-							cc+=1;
-							i=0;
-						}
+					for (int k=0;k<30;k++){
+						inputValuesMatrix[c][k]=ap.getMFCC()[k];
 					}
-					rec=PreferenceStorage.getIsRec(prefs);
+					inputValuesMatrix[c][30]= 0; //zero padding
+					inputValuesMatrix[c][31]= 0; //zero padding
+					convoluteFFT(inputValuesMatrix[c],templateMatrix[c],c);
+					PreferenceStorage.setCurConvo(prefs,curSound,Cur_CONVO);
+				
+					/*
+					 * this is where it happens, do we detect or dont we?
+					 */
+					if(Cur_CONVO*1.1>=Max_CONVO){
+						detected();
+						stopService(new Intent(backGroundListener.this, backGroundListener.class));
+						stopSelf();
+					}
+					if(Prev_CONVO*1.1>=Max_CONVO){
+						stopService(new Intent(backGroundListener.this, backGroundListener.class));
+						stopSelf();
+					}
+					cc+=1;	
+					cur = System.currentTimeMillis();			
 				}
-				recorder.stop();
+				
+				System.out.println("done at: "+cur);
+				System.out.println("PrevConvo: " + Prev_CONVO);
+				System.out.println("CurConvo: "+Cur_CONVO);
+				System.out.println("MaxConvo: "+Max_CONVO);
+				//System.out.println("detected: " +detected);
+				System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~");
+				recorder.stop();			
 				recorder.release();
 				recorder = null;
+				backGroundListener.this.stopSelf();
 			}
 		});
 		listen.run();
 	}
 	
-	public void loadSoundIndex(){
-		Thread load = new Thread(new Runnable(){
-			@Override
-			public void run(){	
-				HashMap <String,float[][]> tmpDex = new HashMap<String,float[][]>();
-				HashMap <String,float[]> tmpDots = new HashMap<String,float[]>();
-				HashMap <String,float[]> tmpAvg = new HashMap<String,float[]>();
-				//Load sound selection preferences
-				Iterator<String> soundIter = checkedSounds.iterator();
-				while(soundIter.hasNext()){
-					String curSound = soundIter.next();
-					File curFile = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).
-							getAbsolutePath()+File.separator+curSound+".xml");
-					tmpDex.put(curSound,getMatrixFromFile(curFile));
-					tmpDots.put(curSound, new float[numWindows]);
-					tmpAvg.put(curSound, new float[3]);
-				}
-				soundIndex = tmpDex;
-				curDots = tmpDots;
-				averageConvolution = tmpAvg;
-			}
-		});
-		load.run();
-	}
-	
-	public void detectDotProducts(int i){
-		float [][] fl = new float[numWindows][30];//soundIndex.get(curSound);
-		float [] f =  new float[numWindows];
-		float dot = 0;
-		Iterator<String> soundIter = checkedSounds.iterator();
-		while(soundIter.hasNext()){
-			String curSound = soundIter.next();
-			fl = soundIndex.get(curSound);
-			f = curDots.get(curSound);
-			dot = dotProduct(fl[i],inputValues[i]);
-			f[i] = dot;
-			curDots.put(curSound,f);
-		}
+	public void convoluteFFT(float [] incoming, float[]template, int c){
 		
-	}
+		//NOTE TEMPLATE MUST BE ALREADY HAVE BEEN FORWARDFTT INTRAINING
+		FloatFFT fft = new FloatFFT(32);
+		//Set up fft 
+		float[] audioBufferFFT;
+		audioBufferFFT= new float[64];
 	
+			// Convolution via FFT
+			// 1. data
+			for (int j = 0; j < 32; ++j) {
+				audioBufferFFT[2*j]=incoming[j];
+				audioBufferFFT[2*j+1] = 0;
+			}
+			fft.complexForward(audioBufferFFT);
+
+			// 2.convolution via complex multiplication
+			float[] v = new float[64];
+			for (int j = 0; j < 32; ++j) {
+			v[2*j]   = audioBufferFFT[2*j]*template[2*j] - audioBufferFFT[2*j+1]*template[2*j+1]; // real
+			v[2*j+1] = audioBufferFFT[2*j+1]*template[2*j] + audioBufferFFT[2*j]*template[2*j+1]; // imaginary
+			}
+			fft.complexInverse(v, true);
+			
+			for (int j = 0; j < 32; ++j) {
+				Cur_CONVO+=v[2*j];
+			}
+	}
+		
 	public float[][] getMatrixFromFile(File f){
 		DataInputStream dis = makeDIS(f);
-		float[][] fl = new float[numWindows][30];
-		for (int i=0;i<numWindows;i++){
-			for (int j=0; j<30;j++){
+		float[][] fl = new float[numVectors][64];
+		
+		for (int i=0;i<numVectors;i++){
+			for (int j=0; j<64;j++){
 				try {
 					fl[i][j]=dis.readFloat();
 				} catch (IOException e) {
-					System.out.println("getMatrixFromFile Error in ReadFloat");
-					e.printStackTrace();
+					System.out.println("getMatrixFromFile Error"+numVectors+", 64" +"in ReadFloat at "+ i+", "+j);
+					//e.printStackTrace();
 				}
 			}
 		}
+		try {
+			dis.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return fl;
 	}
-		
+
 	public void setupRecorder(){
-		int minBufferSize = AudioRecord.getMinBufferSize(
-	        		SAMPLE_RATE,
-	        		AudioFormat.CHANNEL_IN_MONO,
-	        		AudioFormat.ENCODING_PCM_16BIT);
-		bufferSize = minBufferSize;
-	    buffer = new byte[minBufferSize];
+	    buffer = new byte[bufferSize];
 		recorder = new AudioRecord(
 	        		MediaRecorder.AudioSource.MIC,
 	        		SAMPLE_RATE,
 	        		AudioFormat.CHANNEL_IN_MONO,
 	        		AudioFormat.ENCODING_PCM_16BIT,
-	        		minBufferSize);
+	        		bufferSize);
 		 
 	}
 	
@@ -283,102 +310,15 @@ public class backGroundListener extends Service {
 		
 	}
 	
-	public float dotProduct(float[] f1,float[] f2){
-		int f1l=f1.length;
-		int f2l=f2.length;
-		if(f1l!=f2l){
-			System.out.println("DOT PRODUCT ERROR VECTOR LENGTH MISMATCH");
-			return 0;
-		}
-		else{
-			float d = 0;
-			for (int i=0;i<f1l;i++){
-				d+=f1[i]*f2[i];
-			}
-			return d;
-			
-		}
-		
-	}
-	
 	public float sum(float[] f1){
 		float s = 0;
 		for (int i=0;i<f1.length;i++){
 			s+=f1[i];
 		}
 		return s;
-	}
-
-	public float avg(float[] f1, int cc){
-		int l = f1.length;
-		float s = 0;
-		for (int i=0;i<l;i++){
-			s+=f1[i];
-		}
-		if(cc<=3){
-			if(f1[1]==0){
-				l-=1;
-			}
-			if(f1[1]==0){
-				l-=1;
-			}
-		}
-		return s/l;
-	}
-		
-	public float stDev(float[] f, int cc){
-		float avg = avg(f, cc);
-		int l = f.length;
-		float [] difs = new float[l];
-		for (int i=0; i<l; i++){
-			difs[i]=(f[i]-avg);
-		}
-		float std = (sum(difs))/l;
-		return std;
-		
-	}
-	
-	public void printFeatureValues(float[][] f){
-		System.out.println("CHECKING FEATURE VAULES");
-		int i = 0;
-		for (i=0;i<numWindows;i++){
-			printMFCC(f[i],i);
-		}
-	}
-		
-	public void printMFCC(float[] f, int i){
-		System.out.println("_______MFC#"+i+"_______");
-		System.out.println(f[0]);
-		System.out.println(f[1]);
-		System.out.println(f[2]);
-		System.out.println(f[3]);
-		System.out.println(f[4]);
-		System.out.println(f[5]);
-		System.out.println(f[6]);
-		System.out.println(f[7]);
-		System.out.println(f[8]);
-		System.out.println(f[9]);
-		System.out.println(f[10]);
-		System.out.println(f[11]);
-		System.out.println(f[12]);
-		System.out.println(f[13]);
-		System.out.println(f[14]);
-		System.out.println(f[15]);
-		System.out.println(f[16]);
-		System.out.println(f[17]);
-		System.out.println(f[18]);
-		System.out.println(f[19]);
-		System.out.println(f[20]);
-		System.out.println(f[21]);
-		System.out.println(f[22]);
-		System.out.println(f[23]);
-		System.out.println(f[24]);
-		System.out.println(f[25]);
-		System.out.println(f[26]);
-		System.out.println(f[27]);
-		System.out.println(f[28]);
-		System.out.println(f[29]);
-	}
+	} 
 }
+
+
 
 

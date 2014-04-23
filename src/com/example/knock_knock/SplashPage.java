@@ -1,7 +1,13 @@
 package com.example.knock_knock;
 
+import java.util.Iterator;
+import java.util.Set;
+
 import android.os.Bundle;
+import android.os.Message;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.view.Menu;
@@ -15,6 +21,7 @@ public class SplashPage extends Activity {
 	private Button soundSettings, training;
 	private ToggleButton onOff;
 	private static boolean listening;
+	private Set<String> checkedSounds;
 	public static final String PREFS_NAME = "KnockKnockPrefs";
 
 	@Override
@@ -24,18 +31,21 @@ public class SplashPage extends Activity {
 
 		// checks prefs to alert us if we are listening
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		setListening(PreferenceStorage.getIsRec(prefs));
+		boolean r = !(PreferenceStorage.getDetected(prefs));
 
 		// initialize buttons (jic)
 		onOff = (ToggleButton) findViewById(R.id.splashOnOff);
-		onOff.setChecked(isListening());
+		onOff.setChecked(false);
 		onOff.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View arg0) {
 				if (onOff.isChecked()) {
 					startListening();
+					
+					//onOff.setChecked(false);
 				} else {
 					stopListenting();
+					//onOff.setChecked(true);
 				}
 			}
 		});
@@ -47,12 +57,8 @@ public class SplashPage extends Activity {
 	protected void onResume() {
 		super.onResume();
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		setListening(PreferenceStorage.getIsRec(prefs));
-		if (isListening()) {
-			onOff.setChecked(true);
-		} else {
-			onOff.setChecked(false);
-		}
+		boolean r=!(PreferenceStorage.getDetected(prefs));
+		onOff.setChecked(r);
 	}
 
 	@Override
@@ -80,27 +86,25 @@ public class SplashPage extends Activity {
 	}
 
 	public void startListening() {
-		setListening(true);
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		PreferenceStorage.setIsRec(prefs,isListening());
-		Intent i = new Intent(this, backGroundListener.class);
-		this.startService(i);
+		checkedSounds = PreferenceStorage.getAllCheckedSounds(prefs);
+		PreferenceStorage.setDetected(prefs,false);
+		Iterator<String> soundIter = checkedSounds.iterator();
+		while(soundIter.hasNext()){
+			String curSound = soundIter.next();
+			Intent i = new Intent(this, backGroundListener.class);
+			i.putExtra("sound",curSound);
+			this.startService(i);  ///SET DATA NOT OBJ (DIF PROCESS)
+		}
 	}
 
 	public void stopListenting() {
-		setListening(false);
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		PreferenceStorage.setIsRec(prefs,isListening());
-		Intent i = new Intent(this, backGroundListener.class);
-		this.stopService(i);
+		PreferenceStorage.setDetected(prefs,true);
+		stopService(new Intent(this, backGroundListener.class));
+//		ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
+//		am.killBackgroundProcesses("com.example.knock_knock");
 	}
 
-	public static boolean isListening() {
-		return listening;
-	}
-
-	public static void setListening(boolean listening) {
-		SplashPage.listening = listening;
-	}
-
+	
 }

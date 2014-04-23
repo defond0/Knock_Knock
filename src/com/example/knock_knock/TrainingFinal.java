@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -17,12 +18,20 @@ public class TrainingFinal extends Activity {
 	
 	//Location of the newly created mfcc feature matrix
 	final static String FV_PATH = "mfcc_val.xml";
+	private float maxConvo;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_training_final);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
+		Bundle b = getIntent().getExtras();
+		if(b.getFloat("max")!=0){
+			maxConvo=b.getFloat("max");
+		}
+		else{
+			maxConvo=Float.NEGATIVE_INFINITY;
+		}
 	}
 
 	@Override
@@ -46,7 +55,9 @@ public class TrainingFinal extends Activity {
 	public void saveSound(View view){
 		EditText newSoundLabel = (EditText) findViewById(R.id.newSoundLabel);
 		String label = newSoundLabel.getText().toString();
-		PreferenceStorage.addSound(getSharedPreferences(SoundSettings.PREFS_NAME, 0), label);
+		SharedPreferences prefs=getSharedPreferences(SoundSettings.PREFS_NAME, 0);
+		PreferenceStorage.addSound(prefs, label);
+		PreferenceStorage.setMaxConvo(prefs,label,maxConvo);
 		createNewTemplateFile(label);
 		Intent i = new Intent(this, SoundSettings.class);
 		startActivity(i);

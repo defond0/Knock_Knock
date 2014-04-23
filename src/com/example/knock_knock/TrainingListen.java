@@ -20,6 +20,8 @@ import java.util.HashMap;
 
 import be.hogent.tarsos.dsp.AudioEvent;
 import be.hogent.tarsos.dsp.mfcc.MFCC;
+import be.hogent.tarsos.dsp.util.fft.FFT;
+import be.hogent.tarsos.dsp.util.fft.FloatFFT;
 
 import android.app.Activity;
 import android.content.Context;
@@ -43,15 +45,15 @@ public class TrainingListen extends Activity {
 	private boolean isRecording;
 	private Button recordButton;
 	static final int SAMPLE_RATE = 16000;
-	private AudioTrack audioTrack;
 	private byte[] buffer;
 	private int bufferSize;
 	private AudioRecord recorder;
-	final static long recTime = 5000;
+	final static long recTime = 2500;
 	final static String FV_PATH = "mfcc_val.xml";
 	private float[][] featureValues;
-	private int numWindows;
+	private int numVectors;
 	final boolean debug = false;
+	private float MAX_CONVO;
 
 	
 	@Override
@@ -60,6 +62,7 @@ public class TrainingListen extends Activity {
 		setContentView(R.layout.activity_training_listen);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		isRecording = false; //might need to do something with app lifecycle
+		
 	}
 
 	@Override
@@ -89,6 +92,8 @@ public class TrainingListen extends Activity {
 			//recordButton.setText(getResources().getString(R.string.start));
 			isRecording = false;
 			Intent i = new Intent(this, TrainingFinal.class);
+			i.putExtra("max",MAX_CONVO);
+			
 		    startActivity(i);
 		}
 	}
@@ -100,7 +105,7 @@ public class TrainingListen extends Activity {
 			public void run() {
 				//Set up Recorder 
 				setupRecorder();	
-				
+				MAX_CONVO=0;
 				//Set up mfcc extractor
 				MFCC ap = new MFCC(buffer.length/2,SAMPLE_RATE);
 				be.hogent.tarsos.dsp.AudioFormat tarForm = getFormat();
@@ -110,11 +115,11 @@ public class TrainingListen extends Activity {
 				long secs = recTime/1000;
 				long numSamples = secs*SAMPLE_RATE;
 				int nS = (int)(long)numSamples;
-				numWindows =(((nS/bufferSize)+1)*2);
-				featureValues=new float[numWindows][30];
+				numVectors = (((nS/bufferSize)+1)*2)+12;
+				featureValues=new float[numVectors][64];
+				FloatFFT fft = new FloatFFT(32);
 				
-				
-				//Record for recTime seconds and save pcm file
+				//Record for recTime seconds 
 				recorder.startRecording();
 			
 				//Timer for debugging
@@ -123,11 +128,13 @@ public class TrainingListen extends Activity {
 				long rec = cur + recTime;
 				
 				if(debug){
-					System.out.println(numWindows);
+					System.out.println(numVectors);
 					System.out.println("Start ~ "+start);
 				}
 				//Recording Loop
 				int i =0;
+				
+				float[] audioBufferFFT= new float[32];
 				while (cur<rec){
 					
 					//read recorder
@@ -143,15 +150,27 @@ public class TrainingListen extends Activity {
 					//use TarsosDsp MFCC to process signal
 					ap.process(ae);
 					
-					//save 30 floats that MFCC returns
-					featureValues[i]=ap.getMFCC();
+					//save 30 floats that MFCC returns, zero pad and forward fft
+					audioBufferFFT=ap.getMFCC();
+					for (int j = 0; j < 30; ++j) {
+						featureValues[i][2*j] = audioBufferFFT[j];
+						featureValues[i][2*j+1] = 0;
+					}
+					for (int j=29;j<32;j++){
+						featureValues[i][2*j] = 0;
+						featureValues[i][2*j+1] = 0;
+					}
+					fft.complexForward(featureValues[i]);
+					
+					//Convolute with itself to calculate max convolution value
+					convoluteFFTraining(featureValues[i],i,fft);
+					
 					
 					//loop maintenance 
 					i+=1;
 					cur = System.currentTimeMillis();
 				}
-				//Kill Recording
-				
+				System.out.println("Max CONVO "+MAX_CONVO);
 				if(debug){
 					long stop = System.currentTimeMillis();
 					System.out.println("Stop ~ "+stop);
@@ -171,6 +190,19 @@ public class TrainingListen extends Activity {
 			});
 			recordThread.run();	
 			
+	}
+	
+	public void convoluteFFTraining(float[]template, int c, FloatFFT fft){
+			//convolution via complex multiplication
+			float[] v = new float[64];
+			for (int j = 0; j < 32; ++j) {
+			v[2*j]   = template[2*j]*template[2*j] - template[2*j+1]*template[2*j+1]; // real
+			v[2*j+1] = template[2*j+1]*template[2*j] + template[2*j]*template[2*j+1]; // imaginary
+			}
+			fft.complexInverse(v, true);
+			for (int j = 0; j < 32; ++j) {
+				MAX_CONVO+=v[2*j];
+			}
 	}
 	
 	///VARIOUS HELPER METHODS SOME FOR DEBUGGING SOME FOR ACTUAL STUFF 
@@ -199,11 +231,11 @@ public class TrainingListen extends Activity {
 	
 	public void saveFeatureValues(File FV){
 		//Set up file Stream
-		DataOutputStream dos = makeDOS(FV); 
-		
+		DataOutputStream dos = makeDOS(FV); 	
 		//Write the Values from featureValues into data output stream dos
-		for (int i=0;i<numWindows;i++){
-			for(int j=0;j<30;j++){
+		System.out.println(numVectors+", 64");
+		for (int i=0;i<numVectors;i++){
+			for(int j=0;j<64;j++){
 				try {
 					dos.writeFloat(featureValues[i][j]);
 				} catch (IOException e) {
@@ -212,6 +244,21 @@ public class TrainingListen extends Activity {
 				}
 			}
 		}
+		//System.out.println(featureValues.);
+		try {
+			dos.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	public float sum(float[] f1){
+		float s = 0;
+		for (int i=0;i<f1.length;i++){
+			s+=f1[i];
+		}
+		return s;
 	}
 	
 	public void printFile(String path){
@@ -236,7 +283,6 @@ public class TrainingListen extends Activity {
 			
 			}
 
-	
 	public File makeNewFile(String path){
 		File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_MUSIC).getAbsolutePath());
 		if(!dir.exists()){
@@ -252,7 +298,6 @@ public class TrainingListen extends Activity {
 		return f;
 		
 	}
-	
 	
 	public DataOutputStream makeDOS(File f){
 		DataOutputStream dos = null;
@@ -280,8 +325,8 @@ public class TrainingListen extends Activity {
 	public void checkFile(File f){
 		System.out.println("FILE CHECK "+f.getPath());
 		DataInputStream dis = makeDIS(f);
-		float[][] fl = new float[numWindows][30];
-		for (int i=0;i<numWindows;i++){
+		float[][] fl = new float[numVectors][30];
+		for (int i=0;i<numVectors;i++){
 			for (int j=0; j<30;j++){
 				try {
 					fl[i][j]=dis.readFloat();
@@ -297,11 +342,10 @@ public class TrainingListen extends Activity {
 	public void printFeatureValues(float[][] f){
 		System.out.println("CHECKING FEATURE VAULES");
 		int i = 0;
-		for (i=0;i<numWindows;i++){
+		for (i=0;i<numVectors;i++){
 			printMFCC(f[i],i);
 		}
 	}
-	
 	
 	public void printMFCC(float[] f, int i){
 		//System.out.println(ae.getSamplesProcessed());
