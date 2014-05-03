@@ -5,7 +5,6 @@ package com.example.knock_knock;
 
 
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -33,6 +32,8 @@ import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,7 +41,7 @@ import android.view.View;
 import android.widget.Button;
 
 
-public class TrainingListen extends Activity {
+public class TrainingListen extends Activity implements Handler.Callback{
 	
 	private boolean isRecording;
 	private Button recordButton;
@@ -53,6 +54,7 @@ public class TrainingListen extends Activity {
 	private float[][] featureValues;
 	private int numVectors;
 	final boolean debug = false;
+	final Handler adamHandler = new Handler(this);
 	private float MAX_CONVO;
 
 	
@@ -86,9 +88,52 @@ public class TrainingListen extends Activity {
 	public void recordHandler(View view){
 		recordButton = (Button) findViewById(R.id.recordButton);
 		if (!isRecording) {
-			recordButton.setText(getResources().getString(R.string.Done));
-			listen();
-		} else {
+			//recordButton.setText(getResources().getString(R.string.Done));
+			adamHandler.postDelayed(new Runnable(){	
+				public void run(){
+					Message msg = new Message();
+					msg.obj="Create Sound in 3";
+					adamHandler.sendMessage(msg);
+					}
+			},0);
+			adamHandler.postDelayed(new Runnable(){	
+				public void run(){
+					Message msg = new Message();
+					msg.obj="Create Sound in 2";
+					adamHandler.sendMessage(msg);
+					}
+			},1000);
+			adamHandler.postDelayed(new Runnable(){	
+				public void run(){
+					Message msg = new Message();
+					msg.obj="Create Sound in 1";
+					adamHandler.sendMessage(msg);
+					}
+			},2000);
+			adamHandler.postDelayed(new Runnable(){	
+				public void run(){
+					Message msg = new Message();
+					msg.obj="Listening";
+					adamHandler.sendMessage(msg);
+					}
+			},3000);
+			adamHandler.postDelayed(new Runnable(){	
+				public void run(){
+					Message msg = new Message();
+					msg.obj="Listening";
+					adamHandler.sendMessage(msg);
+					TrainingListen.this.listen();	
+					}
+			},4000);
+			adamHandler.postDelayed(new Runnable(){	
+				public void run(){
+					Message msg = new Message();
+					msg.obj="Done";
+					adamHandler.sendMessage(msg);
+					}
+			},3000+recTime);
+		}
+		else {
 			//recordButton.setText(getResources().getString(R.string.start));
 			isRecording = false;
 			Intent i = new Intent(this, TrainingFinal.class);
@@ -97,6 +142,15 @@ public class TrainingListen extends Activity {
 		    startActivity(i);
 		}
 	}
+		
+	@Override
+	public boolean handleMessage(Message arg0) {
+		
+		String msg = (String)arg0.obj;
+		recordButton.setText(" "+ msg);
+		
+		return false;
+	}		
 	
 	public void listen(){
 		isRecording = true;
@@ -163,7 +217,7 @@ public class TrainingListen extends Activity {
 					fft.complexForward(featureValues[i]);
 					
 					//Convolute with itself to calculate max convolution value
-					convoluteFFTraining(featureValues[i],i,fft);
+					//convoluteFFTraining(featureValues[i],i,fft);
 					
 					
 					//loop maintenance 
@@ -206,7 +260,7 @@ public class TrainingListen extends Activity {
 	}
 	
 	///VARIOUS HELPER METHODS SOME FOR DEBUGGING SOME FOR ACTUAL STUFF 
-	/// some are not threaded, but should only be called from within threads
+	/// WARNING some are not threaded, but should only be called from within threads
 	public be.hogent.tarsos.dsp.AudioFormat getFormat(){
 		be.hogent.tarsos.dsp.AudioFormat aF = new be.hogent.tarsos.dsp.AudioFormat(SAMPLE_RATE,16,1,true,false);
 		return aF;

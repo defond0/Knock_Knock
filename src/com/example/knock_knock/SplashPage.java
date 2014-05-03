@@ -18,9 +18,7 @@ import android.widget.ToggleButton;
 
 public class SplashPage extends Activity {
 
-	private Button soundSettings, training;
 	private ToggleButton onOff;
-	private static boolean listening;
 	private Set<String> checkedSounds;
 	public static final String PREFS_NAME = "KnockKnockPrefs";
 
@@ -28,42 +26,22 @@ public class SplashPage extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_splash_page);
-
-		// checks prefs to alert us if we are listening
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		boolean r = !(PreferenceStorage.getDetected(prefs));
-
-		// initialize buttons (jic)
+		
 		onOff = (ToggleButton) findViewById(R.id.splashOnOff);
-		onOff.setChecked(!r);
-		onOff.setOnClickListener(new OnClickListener() {
+		onOff.setChecked(PreferenceStorage.getON_OFF(prefs));
+		onOff.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View arg0) {
 				if (onOff.isChecked()) {
+					System.out.println("Startlistening");
 					startListening();
-					
-					//onOff.setChecked(false);
 				} else {
+					System.out.println("Stoplistening");
 					stopListenting();
-					//onOff.setChecked(true);
 				}
 			}
 		});
-		soundSettings = (Button) findViewById(R.id.soundSettingsButton);
-		training = (Button) findViewById(R.id.trainingButton);
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		boolean r=!(PreferenceStorage.getDetected(prefs));
-		onOff.setChecked(r);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();               
 	}
 
 	@Override
@@ -99,8 +77,8 @@ public class SplashPage extends Activity {
 
 	public void startListening() {
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+		PreferenceStorage.setON_OFF(prefs,true);
 		checkedSounds = PreferenceStorage.getAllCheckedSounds(prefs);
-		PreferenceStorage.setDetected(prefs,false);
 		Iterator<String> soundIter = checkedSounds.iterator();
 		while(soundIter.hasNext()){
 			String curSound = soundIter.next();
@@ -112,10 +90,8 @@ public class SplashPage extends Activity {
 
 	public void stopListenting() {
 		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		PreferenceStorage.setDetected(prefs,true);
+		PreferenceStorage.setON_OFF(prefs,false);
 		stopService(new Intent(this, backGroundListener.class));
-//		ActivityManager am = (ActivityManager)getSystemService(Context.ACTIVITY_SERVICE);
-//		am.killBackgroundProcesses("com.example.knock_knock");
 	}
 
 	

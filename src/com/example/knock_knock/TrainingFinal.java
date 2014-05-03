@@ -57,7 +57,7 @@ public class TrainingFinal extends Activity {
 		String label = newSoundLabel.getText().toString();
 		SharedPreferences prefs=getSharedPreferences(SoundSettings.PREFS_NAME, 0);
 		PreferenceStorage.addSound(prefs, label);
-		PreferenceStorage.setMaxConvo(prefs,label,maxConvo);
+		PreferenceStorage.setAverageConvo(prefs,label,maxConvo);
 		createNewTemplateFile(label);
 		Intent i = new Intent(this, SoundSettings.class);
 		startActivity(i);

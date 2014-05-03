@@ -13,6 +13,7 @@ public class PreferenceStorage {
 	SharedPreferences prefs;
 	
 	//Keys for storing preferences
+	public static final String ON_OFF = "on_off";
 	public static final String ALL_SOUNDS = "allSounds";
 	public static final String ON = "_on";
 	public static final String ALERT_COLOR = "_alertcolor";
@@ -22,15 +23,24 @@ public class PreferenceStorage {
 	public static final String DETECTED = "_detected";
 	public static final String MAX_CONVOLUTION = "_maxConvo";
 	public static final String CUR_CONVOLUTION = "_curConvo";
-	//public static final String[] DEFAULT_SOUNDS = {"Clap", "Whistle", "Dummy0", "Dummy1" };
 	public static final String[] DEFAULT_SOUNDS = {};
 	
 	
-	public static float getMaxConvo(SharedPreferences prefs, String S){
+	public static boolean getON_OFF(SharedPreferences prefs){
+		return prefs.getBoolean(PreferenceStorage.ON_OFF,false);
+	}
+	
+	public static void setON_OFF(SharedPreferences prefs, boolean b){
+		SharedPreferences.Editor editor = prefs.edit();
+	    editor.putBoolean(PreferenceStorage.ON_OFF, b);
+	    editor.commit();
+	}
+	
+	public static float getAvgConvo(SharedPreferences prefs, String S){
 		return prefs.getFloat(PreferenceStorage.MAX_CONVOLUTION+S, 0);
 	}
 	
-	public static void setMaxConvo(SharedPreferences prefs, String S, float f){
+	public static void setAverageConvo(SharedPreferences prefs, String S, float f){
 		SharedPreferences.Editor editor = prefs.edit();
 	    editor.putFloat(PreferenceStorage.MAX_CONVOLUTION+S, f);
 	    editor.commit();
