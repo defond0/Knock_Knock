@@ -84,6 +84,8 @@ public class SoundSettings extends Activity {
 			Button settings = new Button(this);
 			//settings.setText("Settings");
 			settings.setBackgroundResource(R.drawable.ic_action_edit);
+			settings.setScaleX(0.65f);
+			settings.setScaleY(0.65f);
 			settings.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -96,6 +98,8 @@ public class SoundSettings extends Activity {
 			Button delete = new Button(this);
 			//settings.setText("Settings");
 			delete.setBackgroundResource(R.drawable.ic_action_discard);
+			delete.setScaleX(0.6f);
+			delete.setScaleY(0.6f);
 			delete.setOnClickListener(new OnClickListener() {
 
 				@Override
