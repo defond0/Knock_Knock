@@ -234,7 +234,18 @@ public class TrainingListen extends Activity implements Handler.Callback{
 				recorder = null;
 				
 				
-//				
+				//for(int n = 0; n< 3*numVectors;n++){
+				int M=numVectors;
+				//System.out.println("n: "+n+ " convo: "+tmp);
+				for (int m=0; m<2*M;m++){
+					int fx = Math.abs(m%M);
+					int gx = Math.abs((M-m)%M);
+					float tmp=complexMultSumFFT(featureValues[fx],featureValues[gx],fft);
+					System.out.println("convo: "+tmp);
+						
+					}
+				
+				//}
 				
 				
 				//Save Features
@@ -467,19 +478,7 @@ public class TrainingListen extends Activity implements Handler.Callback{
 //						}
 //					}
 //				}
-//				for(int n = 0; n< 3*numVectors;n++){
-//					int M=numVectors;
-//					//System.out.println("n: "+n+ " convo: "+tmp);
-//					for (int m=0; m<2*M;m++){
-//						int fx = Math.abs(m%M);
-//						int gx = Math.abs((M-m)%M);
-//						tmp=complexMultSumFFT(testMatrix[fx],featureValues[gx],fft);
-//						if(n%64==0){
-//							System.out.println("n: "+n+ " convo: "+tmp);
-//						}
-//					}
-//					
-//				}
+
 //
 //				
 //				

@@ -67,10 +67,8 @@ public class backGroundListener extends Service  {
 					curSound = b.getString("sound");
 					Prev_CONVO=PreferenceStorage.getCurConvo(prefs,curSound);
 					avgConvo=PreferenceStorage.getAvgConvo(prefs,curSound);	
-					loadVariables();
-					
-					if((curSound!="")){
-						
+					loadVariables();				
+					if((curSound!="")){				
 						launchControlThread();
 				}
 			}
@@ -197,7 +195,7 @@ public class backGroundListener extends Service  {
 					// http://en.wikipedia.org/wiki/Convolution   this is mostly looking at the section on discrete convolution and circular discrete convolution
 					tmp = 0;
 					
-					for (int m=-1*M; m<2*M;m++){
+					for (int m=-1*M; m<M;m++){
 						fx = Math.abs(m%M);
 						gx = Math.abs((M-m)%M);
 						tmp=+complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft);
@@ -212,7 +210,7 @@ public class backGroundListener extends Service  {
 					else{
 					PreferenceStorage.setCurConvo(prefs,curSound,Cur_CONVO);
 					}
-					//	System.out.println(Cur_CONVO);
+					System.out.println(Cur_CONVO);
 					on = PreferenceStorage.getON_OFF(prefs);
 					n+=1;	
 					cur = System.currentTimeMillis();					
