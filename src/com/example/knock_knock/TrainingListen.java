@@ -168,8 +168,7 @@ public class TrainingListen extends Activity implements Handler.Callback{
 				//Set up float array for storing the mfccs as they are calculated
 				long secs = recTime/1000;
 				long numSamples = secs*SAMPLE_RATE;
-				int nS = (int)(long)numSamples;
-				numVectors = (((nS/bufferSize)+1)*2)+12;
+				numVectors = 64;
 				featureValues=new float[numVectors][64];
 				FloatFFT fft = new FloatFFT(32);
 				
@@ -198,7 +197,7 @@ public class TrainingListen extends Activity implements Handler.Callback{
 					ae = new AudioEvent(tarForm, res);
 					
 					//Set over lap (this needs work)
-					ae.setOverlap(buffer.length/4);
+					ae.setOverlap(buffer.length/2);
 					ae.setFloatBufferWithByteBuffer(buffer);
 					
 					//use TarsosDsp MFCC to process signal
@@ -215,15 +214,15 @@ public class TrainingListen extends Activity implements Handler.Callback{
 						featureValues[i][2*j+1] = 0;
 					}
 					fft.complexForward(featureValues[i]);
-					
-					//Convolute with itself to calculate max convolution value
-					//convoluteFFTraining(featureValues[i],i,fft);
-					
-					
 					//loop maintenance 
 					i+=1;
+					System.out.println(i);
 					cur = System.currentTimeMillis();
 				}
+				
+				
+				
+				
 				System.out.println("Max CONVO "+MAX_CONVO);
 				if(debug){
 					long stop = System.currentTimeMillis();
@@ -233,6 +232,10 @@ public class TrainingListen extends Activity implements Handler.Callback{
 				recorder.stop();
 				recorder.release();
 				recorder = null;
+				
+				
+//				
+				
 				
 				//Save Features
 				File FV = makeNewFile(FV_PATH);
@@ -246,18 +249,26 @@ public class TrainingListen extends Activity implements Handler.Callback{
 			
 	}
 	
-	public void convoluteFFTraining(float[]template, int c, FloatFFT fft){
-			//convolution via complex multiplication
+	public float complexMultSumFFT(float [] incoming, float[]template, FloatFFT fft){
+		
+		//NOTE TEMPLATE MUST BE ALREADY HAVE BEEN FORWARDFTT INTRAINING 
+		
+				
+			// 2.convolution via complex multiplication
 			float[] v = new float[64];
+			float f =0;
 			for (int j = 0; j < 32; ++j) {
-			v[2*j]   = template[2*j]*template[2*j] - template[2*j+1]*template[2*j+1]; // real
-			v[2*j+1] = template[2*j+1]*template[2*j] + template[2*j]*template[2*j+1]; // imaginary
+				v[2*j]   = incoming[2*j]*template[2*j] - incoming[2*j+1]*template[2*j+1]; // real
+				v[2*j+1] = incoming[2*j+1]*template[2*j] + incoming[2*j]*template[2*j+1]; // imaginary
 			}
-			fft.complexInverse(v, true);
+			fft.complexInverse(v, true);	
 			for (int j = 0; j < 32; ++j) {
-				MAX_CONVO+=v[2*j];
+					f+=v[2*j];
 			}
+			
+			return f;
 	}
+		
 	
 	///VARIOUS HELPER METHODS SOME FOR DEBUGGING SOME FOR ACTUAL STUFF 
 	/// WARNING some are not threaded, but should only be called from within threads
@@ -435,6 +446,47 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		System.out.println(f[28]);
 		System.out.println(f[29]);
 	}
+
+//////TEST CODE ///////
+//				float tmp = 0;
+//				float [][] matrix1 = new float[numVectors][64];
+//				float [][] matrix2 = new float[numVectors][64];
+//				
+//				float[][] testMatrix = new float[3*numVectors][64];
+//				for(int n = 0; n< 3*numVectors;n++){
+//					for (int l = 0; l <numVectors;l++){
+//						if(n>=0&&n<numVectors){
+//							testMatrix[n][l]=1;
+//						}
+//						if(n>=numVectors&&n<=2*numVectors){
+//							testMatrix[n][l]=featureValues[n%numVectors][l];
+//						}
+//						if(n>2*numVectors){
+//							testMatrix[n][l]=2;
+//						
+//						}
+//					}
+//				}
+//				for(int n = 0; n< 3*numVectors;n++){
+//					int M=numVectors;
+//					//System.out.println("n: "+n+ " convo: "+tmp);
+//					for (int m=0; m<2*M;m++){
+//						int fx = Math.abs(m%M);
+//						int gx = Math.abs((M-m)%M);
+//						tmp=complexMultSumFFT(testMatrix[fx],featureValues[gx],fft);
+//						if(n%64==0){
+//							System.out.println("n: "+n+ " convo: "+tmp);
+//						}
+//					}
+//					
+//				}
+//
+//				
+//				
+//				
+//				//////////////////////////////////////////////
+
+
 }
 
 
