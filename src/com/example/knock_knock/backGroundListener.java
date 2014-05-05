@@ -5,6 +5,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Arrays;
+
 
 
 import be.hogent.tarsos.dsp.AudioEvent;
@@ -44,19 +46,16 @@ public class backGroundListener extends Service  {
 	private SharedPreferences prefs;
 	private MFCC ap;
 	private float Cur_CONVO;
-	private float Prev_CONVO;
-	private float avgConvo;
 	private boolean on;
 	final int numListens = 2;
 	final int overlap = numListens/2-1;
-	private int Id;
 	byte[] buffer;
+	float[] windowSums;
 	AudioRecord recorder;
 	be.hogent.tarsos.dsp.AudioFormat tarForm;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		Id=startId;
 		prefs = getSharedPreferences(PREFS_NAME, 0);
 		on = PreferenceStorage.getON_OFF(prefs);
 		Bundle b = intent.getExtras();
@@ -65,9 +64,10 @@ public class backGroundListener extends Service  {
 			if(b!=null){
 				if(b.getString("sound") != null){
 					curSound = b.getString("sound");
-					Prev_CONVO=PreferenceStorage.getCurConvo(prefs,curSound);
-					avgConvo=PreferenceStorage.getAvgConvo(prefs,curSound);	
-					loadVariables();				
+					bufferSize = AudioRecord.getMinBufferSize(
+			        		SAMPLE_RATE,
+			        		AudioFormat.CHANNEL_IN_MONO,
+			        		AudioFormat.ENCODING_PCM_16BIT);		
 					if((curSound!="")){				
 						launchControlThread();
 				}
@@ -94,14 +94,6 @@ public class backGroundListener extends Service  {
 	}
 	
 	
-	public void loadVariables(){
-		bufferSize = AudioRecord.getMinBufferSize(
-        		SAMPLE_RATE,
-        		AudioFormat.CHANNEL_IN_MONO,
-        		AudioFormat.ENCODING_PCM_16BIT);
-		
-	}
-	
 	public void detected(String sound){
 		boolean alert = PreferenceStorage.isAlertNotifOn(prefs, curSound);
 		boolean vibe = PreferenceStorage.isVibrateNotifOn(prefs, curSound);
@@ -127,7 +119,7 @@ public class backGroundListener extends Service  {
 		Thread listen = new Thread(new Runnable(){
 			@Override
 			public void run(){
-				
+				windowSums= new float[64];
 				//set up recorder
 				buffer = new byte[bufferSize];
 				recorder = new AudioRecord(
@@ -146,6 +138,7 @@ public class backGroundListener extends Service  {
 				float[][] templateMatrix= getMatrixFromFile(new File(Environment.getExternalStoragePublicDirectory(
 						Environment.DIRECTORY_MUSIC).
 						getAbsolutePath()+File.separator+curSound+".xml"));
+				//float[][] templateMatrix = new float[64][64];
 				
 				//Set up mfcc extractor
 				ap = new MFCC(bufferSize/2,SAMPLE_RATE);
@@ -153,14 +146,15 @@ public class backGroundListener extends Service  {
 			
 				//Recording Loop
 				SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-				Cur_CONVO=PreferenceStorage.getCurConvo(prefs,curSound);
+				Cur_CONVO=0;//PreferenceStorage.getCurConvo(prefs,curSound);
 				long cur = System.currentTimeMillis();
 				System.out.println(curSound+ " Starting at: "+cur);
 				long rec = cur + (recTime*5);
 				int n = 0;
-				float tmp;
+				double tmp;
 				int fx,gx;
 				FloatFFT fft = new FloatFFT(32);
+				float averageCur_CONVO=Float.POSITIVE_INFINITY;
 				while (on&&cur<rec){
 					int M = n%numVectors;
 							
@@ -193,24 +187,39 @@ public class backGroundListener extends Service  {
 					
 					// Convolution via complex multiplixation 
 					// http://en.wikipedia.org/wiki/Convolution   this is mostly looking at the section on discrete convolution and circular discrete convolution
-					tmp = 0;
-					
+					//float nSum = 0;
+					tmp=0;
+					float[]cV = new float [2*M];
 					for (int m=-1*M; m<M;m++){
 						fx = Math.abs(m%M);
 						gx = Math.abs((M-m)%M);
-						tmp=+complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft);
+						tmp=complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft); // perhaps reverse template?
+						cV[fx]=(float) tmp;
+						//tmp/=(64)-Math.abs((fx*2)-64+1);
+						//nSum+=tmp;
+						
 					}
+					normalize(cV);
+					Cur_CONVO=sum(cV);
 					
-					Cur_CONVO=tmp;
+					
+					
+					
+					///////////STATS///////
+					
+					windowSums[M]=Cur_CONVO;
+					//double [] nW = normalize(windowSums);
+					
+					
 					
 					/////DETECTION ZONE TMP == CONVOLUTI0N(n)
-					if(tmp>10000){
+					if(Cur_CONVO>=10000000){
 						detected(curSound);
 					}
 					else{
 					PreferenceStorage.setCurConvo(prefs,curSound,Cur_CONVO);
 					}
-					System.out.println(Cur_CONVO);
+					//System.out.println("cc "+ Cur_CONVO);
 					on = PreferenceStorage.getON_OFF(prefs);
 					n+=1;	
 					cur = System.currentTimeMillis();					
@@ -233,20 +242,36 @@ public class backGroundListener extends Service  {
 		
 		//NOTE TEMPLATE MUST BE ALREADY HAVE BEEN FORWARDFTT INTRAINING 
 		
-				
-			// 2.convolution via complex multiplication
 			float[] v = new float[64];
 			float f =0;
+			float t =0;
+			int k;
 			for (int j = 0; j < 32; ++j) {
-				v[2*j]   = incoming[2*j]*template[2*j] - incoming[2*j+1]*template[2*j+1]; // real
-				v[2*j+1] = incoming[2*j+1]*template[2*j] + incoming[2*j]*template[2*j+1]; // imaginary
+				k=62-2*j;
+				v[2*j]   = incoming[2*j]*template[k] - incoming[2*j+1]*template[k+1]; // real
+				v[2*j+1] = incoming[2*j+1]*template[k] + incoming[2*j]*template[k+1]; // imaginary
 			}
 			fft.complexInverse(v, true);	
 			for (int j = 0; j < 32; ++j) {
-					f+=v[2*j];
+					t=v[2*j];
+					f+=t;
 			}
 			
 			return f;
+	}
+	
+	public double[] normalize(float[] f){
+		double l = 0;
+		double [] nD = new double[f.length];
+		for (int k=0;k<f.length;k++){
+			l += f[k]*f[k];
+		}
+		double a = Math.sqrt(l);
+		for (int k=0;k<f.length;k++){
+			nD[k]=f[k]/a;
+			System.out.println(f[k]/a);
+		}
+		return nD;
 	}
 		
 	public float[][] getMatrixFromFile(File f){

@@ -264,8 +264,6 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		
 		//NOTE TEMPLATE MUST BE ALREADY HAVE BEEN FORWARDFTT INTRAINING 
 		
-				
-			// 2.convolution via complex multiplication
 			float[] v = new float[64];
 			float f =0;
 			for (int j = 0; j < 32; ++j) {
