@@ -48,10 +48,10 @@ public final class R {
     }
     public static final class id {
         public static final int LinearLayout1=0x7f0a0011;
-        public static final int action_bar_home=0x7f0a001b;
-        public static final int action_bar_settings=0x7f0a001d;
-        public static final int action_bar_training=0x7f0a001c;
-        public static final int action_settings=0x7f0a001e;
+        public static final int action_bar_home=0x7f0a001c;
+        public static final int action_bar_settings=0x7f0a001e;
+        public static final int action_bar_training=0x7f0a001d;
+        public static final int action_settings=0x7f0a001f;
         public static final int alertColorBlue=0x7f0a000c;
         public static final int alertColorGreen=0x7f0a000d;
         public static final int alertColorPurple=0x7f0a000e;
@@ -69,7 +69,8 @@ public final class R {
         public static final int notificationTypePush=0x7f0a0007;
         public static final int notificationTypeSettings=0x7f0a0005;
         public static final int notificationTypeVibrate=0x7f0a0009;
-        public static final int recordButton=0x7f0a001a;
+        public static final int pictureLayout=0x7f0a001a;
+        public static final int recordButton=0x7f0a001b;
         public static final int soundSelectionTitle=0x7f0a000f;
         public static final int soundSettingsButton=0x7f0a0015;
         public static final int soundTable=0x7f0a0010;

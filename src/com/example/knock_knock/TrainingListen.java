@@ -13,22 +13,16 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.HashMap;
-
-import be.hogent.tarsos.dsp.AudioEvent;
-import be.hogent.tarsos.dsp.mfcc.MFCC;
-import be.hogent.tarsos.dsp.util.fft.FFT;
-import be.hogent.tarsos.dsp.util.fft.FloatFFT;
 
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
@@ -38,10 +32,32 @@ import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import be.hogent.tarsos.dsp.AudioEvent;
+import be.hogent.tarsos.dsp.MicrophoneAudioDispatcher;
+import be.hogent.tarsos.dsp.Oscilloscope;
+import be.hogent.tarsos.dsp.Oscilloscope.OscilloscopeEventHandler;
+import be.hogent.tarsos.dsp.mfcc.MFCC;
+import be.hogent.tarsos.dsp.util.fft.FloatFFT;
 
 
-public class TrainingListen extends Activity implements Handler.Callback{
+public class TrainingListen extends Activity implements Handler.Callback, OscilloscopeEventHandler{
+	//Draw Stuff
+    private Paint myDrawPaint = new Paint();
+    Canvas mainC;
+
+	//Recording Stuff
+	private int dSAMPLE_RATE = 44100;
+	private int dBufferSize = 2048;
+	private int overlap = 0;
+	private be.hogent.tarsos.dsp.AudioFormat tarsosFormat;
+	private DrawView mDrawView; 
+	//Osci Listener
+	private MicrophoneAudioDispatcher audioDispatcher;
+	private boolean mIsRecording;
+	
+	
 	
 	private boolean isRecording;
 	private Button recordButton;
@@ -65,8 +81,81 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		isRecording = false; //might need to do something with app lifecycle
 		
+		mIsRecording = false;
+		ViewGroup picLayout = (ViewGroup) findViewById(R.id.pictureLayout);
+        mDrawView = new DrawView(this);
+        mDrawView.setBackgroundColor(0x299ACC);
+        picLayout.addView(mDrawView);
 	}
+	
+    public void dListen() {
+    	if (mIsRecording){
+			if(audioDispatcher!= null){
+				audioDispatcher.stop();
+			}
+	      	audioDispatcher = new MicrophoneAudioDispatcher(dSAMPLE_RATE, dBufferSize, overlap);
+	      	audioDispatcher.addAudioProcessor(new Oscilloscope(this));
+	    	(new Thread(audioDispatcher)).start();
+    	}
+    }
 
+	@Override	
+	public void handleEvent(float[] data, AudioEvent event) {
+		mDrawView.paint(data, event);
+	}
+	
+	
+//    @Override
+//    public void onPause() {
+//    	super.onPause();
+//    	audioDispatcher.stop();
+//    }
+//    @Override
+//    public void onResume() {
+//    	super.onPause();
+//      	audioDispatcher = new MicrophoneAudioDispatcher(dSAMPLE_RATE, dBufferSize, overlap);
+//      	audioDispatcher.addAudioProcessor(new Oscilloscope(this));
+//    	(new Thread(audioDispatcher)).start();
+//    }
+	
+	   class DrawView extends View{
+	    	public float data[];
+
+	        public DrawView(Context context) {
+	            super(context);
+	            myDrawPaint.setColor(Color.WHITE);
+	            myDrawPaint.setAntiAlias(true);
+	            myDrawPaint.setStrokeWidth(20);
+	            myDrawPaint.setStyle(Paint.Style.STROKE);
+	            myDrawPaint.setStrokeJoin(Paint.Join.ROUND);
+	            myDrawPaint.setStrokeCap(Paint.Cap.ROUND);
+	        }
+	        
+	        @Override
+	        public void onDraw(Canvas canvas) {
+	        	if (mIsRecording){
+		    		System.out.println("onDraw.");
+		            super.onDraw(canvas);
+		
+		            if(data != null){
+						float width = getWidth();
+						float height = getHeight();
+						float halfHeight = height / 2;
+						for(int i=0; i < data.length ; i+=4){
+							 canvas.drawLine( data[i]* width, halfHeight - data[i+1]* height, 
+									 data[i+2]*width,  halfHeight - data[i+3]*height, myDrawPaint);
+						}
+					}
+	        	}
+		    }
+	        
+			public void paint(float[] data, AudioEvent event){
+				this.data = data;
+				mDrawView.postInvalidate();
+			}
+	    }
+	
+	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
@@ -115,14 +204,16 @@ public class TrainingListen extends Activity implements Handler.Callback{
 					Message msg = new Message();
 					msg.obj="Listening";
 					adamHandler.sendMessage(msg);
-					}
+				}
+				
 			},3000);
 			adamHandler.postDelayed(new Runnable(){	
 				public void run(){
+					
 					Message msg = new Message();
 					msg.obj="Listening";
 					adamHandler.sendMessage(msg);
-					TrainingListen.this.listen();	
+					TrainingListen.this.listen();
 					}
 			},4000);
 			adamHandler.postDelayed(new Runnable(){	
@@ -130,7 +221,17 @@ public class TrainingListen extends Activity implements Handler.Callback{
 					Message msg = new Message();
 					msg.obj="Done";
 					adamHandler.sendMessage(msg);
-					}
+					
+					
+					//TROUBLE SECTION RIGHT HERE
+					if (mIsRecording) {
+						mIsRecording = false;
+						audioDispatcher.stop();
+					} else {
+						mIsRecording = true;
+						dListen();
+					}	
+				}
 			},3000+recTime);
 		}
 		else {
@@ -138,9 +239,11 @@ public class TrainingListen extends Activity implements Handler.Callback{
 			isRecording = false;
 			Intent i = new Intent(this, TrainingFinal.class);
 			i.putExtra("max",MAX_CONVO);
-			
+			audioDispatcher.stop();
 		    startActivity(i);
 		}
+		
+
 	}
 		
 	@Override
@@ -148,11 +251,11 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		
 		String msg = (String)arg0.obj;
 		recordButton.setText(" "+ msg);
-		
 		return false;
 	}		
 	
 	public void listen(){
+	
 		isRecording = true;
 		Thread recordThread = new Thread(new Runnable() {
 			@Override
@@ -455,6 +558,8 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		System.out.println(f[28]);
 		System.out.println(f[29]);
 	}
+
+
 
 //////TEST CODE ///////
 //				float tmp = 0;
