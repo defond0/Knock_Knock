@@ -48,16 +48,13 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
     Canvas mainC;
 
 	//Recording Stuff
-	private int dSAMPLE_RATE = 44100;
-	private int dBufferSize = 2048;
-	private int overlap = 0;
 	private be.hogent.tarsos.dsp.AudioFormat tarsosFormat;
 	private DrawView mDrawView; 
 	//Osci Listener
 	private MicrophoneAudioDispatcher audioDispatcher;
 	private boolean mIsRecording;
 	
-	
+	private be.hogent.tarsos.dsp.Oscilloscope osci;
 	
 	private boolean isRecording;
 	private Button recordButton;
@@ -83,41 +80,31 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 		
 		mIsRecording = false;
 		ViewGroup picLayout = (ViewGroup) findViewById(R.id.pictureLayout);
+		osci = new Oscilloscope(TrainingListen.this);
         mDrawView = new DrawView(this);
         mDrawView.setBackgroundColor(0x299ACC);
         picLayout.addView(mDrawView);
 	}
 	
-    public void dListen() {
-    	if (mIsRecording){
-			if(audioDispatcher!= null){
-				audioDispatcher.stop();
-			}
-	      	audioDispatcher = new MicrophoneAudioDispatcher(dSAMPLE_RATE, dBufferSize, overlap);
-	      	audioDispatcher.addAudioProcessor(new Oscilloscope(this));
-	    	(new Thread(audioDispatcher)).start();
-    	}
-    }
+//    public void dListen() {
+//    	if (mIsRecording){
+//			if(audioDispatcher!= null){
+//				audioDispatcher.stop();
+//			}
+//	      	//audioDispatcher = new MicrophoneAudioDispatcher(dSAMPLE_RATE, dBufferSize, overlap);
+//	      	//audioDispatcher.addAudioProcessor(new Oscilloscope(this));
+//	    	(new Thread(audioDispatcher)).start();
+//    	}
+//    }
 
 	@Override	
 	public void handleEvent(float[] data, AudioEvent event) {
+		System.out.println("Boosh");
 		mDrawView.paint(data, event);
 	}
 	
 	
-//    @Override
-//    public void onPause() {
-//    	super.onPause();
-//    	audioDispatcher.stop();
-//    }
-//    @Override
-//    public void onResume() {
-//    	super.onPause();
-//      	audioDispatcher = new MicrophoneAudioDispatcher(dSAMPLE_RATE, dBufferSize, overlap);
-//      	audioDispatcher.addAudioProcessor(new Oscilloscope(this));
-//    	(new Thread(audioDispatcher)).start();
-//    }
-	
+
 	   class DrawView extends View{
 	    	public float data[];
 
@@ -223,14 +210,14 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 					adamHandler.sendMessage(msg);
 					
 					
-					//TROUBLE SECTION RIGHT HERE
-					if (mIsRecording) {
-						mIsRecording = false;
-						audioDispatcher.stop();
-					} else {
-						mIsRecording = true;
-						dListen();
-					}	
+//					//TROUBLE SECTION RIGHT HERE
+//					if (mIsRecording) {
+//						mIsRecording = false;
+//						audioDispatcher.stop();
+//					} else {
+//						mIsRecording = true;
+//						dListen();
+//					}	
 				}
 			},3000+recTime);
 		}
@@ -238,7 +225,7 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 			//recordButton.setText(getResources().getString(R.string.start));
 			isRecording = false;
 			Intent i = new Intent(this, TrainingFinal.class);
-			audioDispatcher.stop();
+			//audioDispatcher.stop();
 		    startActivity(i);
 		}
 		
@@ -264,11 +251,11 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 				MAX_CONVO=0;
 				//Set up mfcc extractor
 				MFCC ap = new MFCC(buffer.length/2,SAMPLE_RATE);
+				
 				be.hogent.tarsos.dsp.AudioFormat tarForm = getFormat();
 				AudioEvent ae = null;
 				
 				//Set up float array for storing the mfccs as they are calculated
-				long secs = recTime/1000;
 				numVectors = 64;
 				featureValues=new float[numVectors][64];
 				FloatFFT fft = new FloatFFT(32);
@@ -303,6 +290,8 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 					
 					//use TarsosDsp MFCC to process signal
 					ap.process(ae);
+					osci.process(ae);
+					///TrainingListen.this.handleEvent(ae.getFloatBuffer(),ae);
 					
 					//save 30 floats that MFCC returns, zero pad and forward fft
 					audioBufferFFT=ap.getMFCC();
