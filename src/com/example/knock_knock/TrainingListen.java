@@ -194,7 +194,7 @@ public class TrainingListen extends Activity implements Handler.Callback{
 					long res = recorder.read(buffer, 0, buffer.length);
 					
 					//create audio event
-					ae = new AudioEvent(tarForm, res);
+					ae = new AudioEvent(tarForm, buffer.length);
 					
 					//Set over lap (this needs work)
 					ae.setOverlap(buffer.length/2);
@@ -243,9 +243,9 @@ public class TrainingListen extends Activity implements Handler.Callback{
 					float tmp=complexMultSumFFT(featureValues[fx],featureValues[gx],fft);
 					System.out.println("convo: "+tmp);
 						
-					}
+				}
 				
-				//}
+				
 				
 				
 				//Save Features

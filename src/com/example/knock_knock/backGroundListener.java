@@ -157,7 +157,7 @@ public class backGroundListener extends Service  {
 					//read recorder
 					long res = recorder.read(buffer, 0, buffer.length);
 					//create audio event
-					ae = new AudioEvent(tarForm, res);
+					ae = new AudioEvent(tarForm, buffer.length);
 					//Set overlap 
 					ae.setOverlap(buffer.length/2);
 					ae.setFloatBufferWithByteBuffer(buffer);
@@ -192,11 +192,12 @@ public class backGroundListener extends Service  {
 						tmp=complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft); // perhaps reverse template?
 						cV[fx]=(float) tmp;
 					}
-					if(n>64){
-						normalizeDetect(cV);
-					}
+					
 					Cur_CONVO=sum(cV);
 					windowSums[M]=Cur_CONVO;
+					if(n%32==0){
+						normalizeDetect(windowSums);
+					}
 					on = PreferenceStorage.getON_OFF(prefs);
 					n+=1;	
 					cur = System.currentTimeMillis();					
@@ -245,7 +246,7 @@ public class backGroundListener extends Service  {
 		double a = Math.sqrt(l);
 		for (int k=0;k<f.length;k++){
 			nD[k]=f[k]/a;
-			if(nD[k]>=.99){
+			if(nD[k]>=.5){
 				detected(curSound);
 			}
 			//System.out.println(f[k]/a);
@@ -260,7 +261,7 @@ public class backGroundListener extends Service  {
 		for (int i=0;i<numVectors;i++){
 			for (int j=0; j<64;j++){
 				try {
-					fl[i][j]=dis.readFloat();
+					fl[i][63-j]=dis.readFloat();
 				} catch (IOException e) {
 					System.out.println("getMatrixFromFile Error"+numVectors+", 64" +"in ReadFloat at "+ i+", "+j);
 					//e.printStackTrace();
