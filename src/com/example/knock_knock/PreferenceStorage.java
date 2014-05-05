@@ -13,13 +13,58 @@ public class PreferenceStorage {
 	SharedPreferences prefs;
 	
 	//Keys for storing preferences
+	public static final String ON_OFF = "on_off";
 	public static final String ALL_SOUNDS = "allSounds";
 	public static final String ON = "_on";
 	public static final String ALERT_COLOR = "_alertcolor";
 	public static final String PUSH_NOTIF = "_push";
 	public static final String ALERT_NOTIF = "_alert";
 	public static final String VIBRATE_NOTIF = "_vibrate";
-	public static final String[] DEFAULT_SOUNDS = {"Clap", "Whistle", "Dummy0", "Dummy1" };
+	public static final String DETECTED = "_detected";
+	public static final String MAX_CONVOLUTION = "_maxConvo";
+	public static final String CUR_CONVOLUTION = "_curConvo";
+	public static final String[] DEFAULT_SOUNDS = {};
+	
+	
+	public static boolean getON_OFF(SharedPreferences prefs){
+		return prefs.getBoolean(PreferenceStorage.ON_OFF,false);
+	}
+	
+	public static void setON_OFF(SharedPreferences prefs, boolean b){
+		SharedPreferences.Editor editor = prefs.edit();
+	    editor.putBoolean(PreferenceStorage.ON_OFF, b);
+	    editor.commit();
+	}
+	
+	public static float getAvgConvo(SharedPreferences prefs, String S){
+		return prefs.getFloat(PreferenceStorage.MAX_CONVOLUTION+S, 0);
+	}
+	
+	public static void setAverageConvo(SharedPreferences prefs, String S, float f){
+		SharedPreferences.Editor editor = prefs.edit();
+	    editor.putFloat(PreferenceStorage.MAX_CONVOLUTION+S, f);
+	    editor.commit();
+	}
+	
+	public static float getCurConvo(SharedPreferences prefs, String S){
+		return prefs.getFloat(PreferenceStorage.CUR_CONVOLUTION+S, 0);
+	}
+	
+	public static void setCurConvo(SharedPreferences prefs, String S, float f){
+		SharedPreferences.Editor editor = prefs.edit();
+	    editor.putFloat(PreferenceStorage.CUR_CONVOLUTION+S, f);
+	    editor.commit();
+	}
+	
+	public static boolean getDetected(SharedPreferences prefs){
+		return prefs.getBoolean(PreferenceStorage.DETECTED,false);
+	}
+	
+	public static void setDetected(SharedPreferences prefs, boolean b){
+		SharedPreferences.Editor editor = prefs.edit();
+	    editor.putBoolean(PreferenceStorage.DETECTED, b);
+	    editor.commit();
+	}
 	
 	public static Set<String> getAllSounds(SharedPreferences prefs) {
 		Set<String> defaultSet = new HashSet<String>(Arrays.asList(DEFAULT_SOUNDS));

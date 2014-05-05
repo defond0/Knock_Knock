@@ -21,7 +21,11 @@ public class Notification_Screen extends Activity {
 		setContentView(R.layout.activity_notification__screen);
 		//Display type of sound that was detected
 		Intent intent = getIntent();
-		String notification = intent.getStringExtra(backGroundListener.EXTRA_MESSAGE);
+		String notification="";
+		Bundle b = getIntent().getExtras();
+		if(b.getString("notification")!=null){
+			notification = b.getString("notification");
+		}
 		notificationText = (TextView) findViewById(R.id.notificationText);
 		notificationText.setText(notification);
 		//Change background color
