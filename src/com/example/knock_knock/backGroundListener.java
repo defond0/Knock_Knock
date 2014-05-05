@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Arrays;
 
 
 
@@ -23,9 +22,7 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
-import android.os.Handler.Callback;
 import android.os.IBinder;
-import android.os.Message;
 import android.os.Vibrator;
 
 
@@ -154,7 +151,6 @@ public class backGroundListener extends Service  {
 				double tmp;
 				int fx,gx;
 				FloatFFT fft = new FloatFFT(32);
-				float averageCur_CONVO=Float.POSITIVE_INFINITY;
 				while (on&&cur<rec){
 					int M = n%numVectors;
 							
@@ -195,31 +191,12 @@ public class backGroundListener extends Service  {
 						gx = Math.abs((M-m)%M);
 						tmp=complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft); // perhaps reverse template?
 						cV[fx]=(float) tmp;
-						//tmp/=(64)-Math.abs((fx*2)-64+1);
-						//nSum+=tmp;
-						
 					}
-					normalize(cV);
+					if(n>64){
+						normalizeDetect(cV);
+					}
 					Cur_CONVO=sum(cV);
-					
-					
-					
-					
-					///////////STATS///////
-					
 					windowSums[M]=Cur_CONVO;
-					//double [] nW = normalize(windowSums);
-					
-					
-					
-					/////DETECTION ZONE TMP == CONVOLUTI0N(n)
-					if(Cur_CONVO>=10000000){
-						detected(curSound);
-					}
-					else{
-					PreferenceStorage.setCurConvo(prefs,curSound,Cur_CONVO);
-					}
-					//System.out.println("cc "+ Cur_CONVO);
 					on = PreferenceStorage.getON_OFF(prefs);
 					n+=1;	
 					cur = System.currentTimeMillis();					
@@ -256,11 +233,10 @@ public class backGroundListener extends Service  {
 					t=v[2*j];
 					f+=t;
 			}
-			
 			return f;
 	}
 	
-	public double[] normalize(float[] f){
+	public double[] normalizeDetect(float[] f){
 		double l = 0;
 		double [] nD = new double[f.length];
 		for (int k=0;k<f.length;k++){
@@ -269,7 +245,10 @@ public class backGroundListener extends Service  {
 		double a = Math.sqrt(l);
 		for (int k=0;k<f.length;k++){
 			nD[k]=f[k]/a;
-			System.out.println(f[k]/a);
+			if(nD[k]>=.99){
+				detected(curSound);
+			}
+			//System.out.println(f[k]/a);
 		}
 		return nD;
 	}
