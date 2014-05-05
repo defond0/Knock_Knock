@@ -215,7 +215,7 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 					adamHandler.sendMessage(msg);
 					TrainingListen.this.listen();
 					}
-			},4000);
+			},3000);
 			adamHandler.postDelayed(new Runnable(){	
 				public void run(){
 					Message msg = new Message();
@@ -238,7 +238,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 			//recordButton.setText(getResources().getString(R.string.start));
 			isRecording = false;
 			Intent i = new Intent(this, TrainingFinal.class);
-			i.putExtra("max",MAX_CONVO);
 			audioDispatcher.stop();
 		    startActivity(i);
 		}
@@ -270,7 +269,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 				
 				//Set up float array for storing the mfccs as they are calculated
 				long secs = recTime/1000;
-				long numSamples = secs*SAMPLE_RATE;
 				numVectors = 64;
 				featureValues=new float[numVectors][64];
 				FloatFFT fft = new FloatFFT(32);
@@ -324,9 +322,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 				}
 				
 				
-				
-				
-				System.out.println("Max CONVO "+MAX_CONVO);
 				if(debug){
 					long stop = System.currentTimeMillis();
 					System.out.println("Stop ~ "+stop);
@@ -335,21 +330,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 				recorder.stop();
 				recorder.release();
 				recorder = null;
-				
-				
-				//for(int n = 0; n< 3*numVectors;n++){
-				int M=numVectors;
-				//System.out.println("n: "+n+ " convo: "+tmp);
-				for (int m=0; m<2*M;m++){
-					int fx = Math.abs(m%M);
-					int gx = Math.abs((M-m)%M);
-					float tmp=complexMultSumFFT(featureValues[fx],featureValues[gx],fft);
-					System.out.println("convo: "+tmp);
-						
-				}
-				
-				
-				
 				
 				//Save Features
 				File FV = makeNewFile(FV_PATH);
@@ -559,34 +539,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 		System.out.println(f[29]);
 	}
 
-
-
-//////TEST CODE ///////
-//				float tmp = 0;
-//				float [][] matrix1 = new float[numVectors][64];
-//				float [][] matrix2 = new float[numVectors][64];
-//				
-//				float[][] testMatrix = new float[3*numVectors][64];
-//				for(int n = 0; n< 3*numVectors;n++){
-//					for (int l = 0; l <numVectors;l++){
-//						if(n>=0&&n<numVectors){
-//							testMatrix[n][l]=1;
-//						}
-//						if(n>=numVectors&&n<=2*numVectors){
-//							testMatrix[n][l]=featureValues[n%numVectors][l];
-//						}
-//						if(n>2*numVectors){
-//							testMatrix[n][l]=2;
-//						
-//						}
-//					}
-//				}
-
-//
-//				
-//				
-//				
-//				//////////////////////////////////////////////
 
 
 }

@@ -26,12 +26,6 @@ public class TrainingFinal extends Activity {
 		setContentView(R.layout.activity_training_final);
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 		Bundle b = getIntent().getExtras();
-		if(b.getFloat("max")!=0){
-			maxConvo=b.getFloat("max");
-		}
-		else{
-			maxConvo=Float.NEGATIVE_INFINITY;
-		}
 	}
 
 	@Override
