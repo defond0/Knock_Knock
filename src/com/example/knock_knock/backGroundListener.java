@@ -41,7 +41,6 @@ public class backGroundListener extends Service  {
 	final static int numVectors = 64;
 	private float[][] inputValuesMatrix;
 	private SharedPreferences prefs;
-	private MFCC ap;
 	private float Cur_CONVO;
 	private boolean on;
 	final int numListens = 2;
@@ -129,17 +128,16 @@ public class backGroundListener extends Service  {
 				//start recording
 				recorder.startRecording();
 			
-				//Set up float array for storing the mfccs as they are calculated
+				//Set up float array for storing the ffted siganls as they are calculated
 				FloatFFT fft = new FloatFFT(buffer.length);
-				inputValuesMatrix=new float[numVectors][64];
+				inputValuesMatrix=new float[numVectors][buffer.length*2];
 				float[] audioBufferFFT;
 				float[][] templateMatrix= getMatrixFromFile(new File(Environment.getExternalStoragePublicDirectory(
 						Environment.DIRECTORY_MUSIC).
 						getAbsolutePath()+File.separator+curSound+".xml"), fft);
-				//float[][] templateMatrix = new float[64][64];
+			
 				
-				//Set up mfcc extractor
-				ap = new MFCC(bufferSize/2,SAMPLE_RATE);
+			
 				AudioEvent ae = null;
 			
 				//Recording Loop
@@ -163,25 +161,13 @@ public class backGroundListener extends Service  {
 					ae.setOverlap(buffer.length/2);
 					ae.setFloatBufferWithByteBuffer(buffer);
 					
-					//use TarsosDsp MFCC to process signal
-					ap.process(ae);
 			
-					//save 30 floats that MFCC returns and ffts them
+					//save floats and forward transform
+					audioBufferFFT=ae.getFloatBuffer();
+					fft.complexForward(audioBufferFFT);
+					inputValuesMatrix[M]=audioBufferFFT;
 					
-					audioBufferFFT=ap.getMFCC();
-					for (int j = 0; j < 32; ++j) {
-						if(j<=29){
-							inputValuesMatrix[M][2*j]=audioBufferFFT[j];
-						}
-						else{
-							inputValuesMatrix[M][2*j]=0; //zero padding
-						}
-							inputValuesMatrix[M][2*j+1]=0;
-						
-					}
-					fft.complexForward(inputValuesMatrix[M]);
-					
-					
+				
 					// Convolution via complex multiplixation 
 					// http://en.wikipedia.org/wiki/Convolution   this is mostly looking at the section on discrete convolution and circular discrete convolution
 					//float nSum = 0;
@@ -221,17 +207,17 @@ public class backGroundListener extends Service  {
 		
 		//NOTE TEMPLATE MUST BE ALREADY HAVE BEEN FORWARDFTT INTRAINING 
 		
-			float[] v = new float[64];
+			float[] v = new float[buffer.length*2];
 			float f =0;
 			float t =0;
 			int k;
-			for (int j = 0; j < 32; ++j) {
-				k=62-2*j;
-				v[2*j]   = incoming[2*j]*template[k] - incoming[2*j+1]*template[k+1]; // real
-				v[2*j+1] = incoming[2*j+1]*template[k] + incoming[2*j]*template[k+1]; // imaginary
+			for (int j = 0; j < buffer.length; ++j) {
+				k=2*j;
+				v[k]   = incoming[k]*template[k] - incoming[k+1]*template[k+1]; // real
+				v[k+1] = incoming[k+1]*template[k] + incoming[k]*template[k+1]; // imaginary
 			}
 			fft.complexInverse(v, true);	
-			for (int j = 0; j < 32; ++j) {
+			for (int j = 0; j < buffer.length; ++j) {
 					t=v[2*j];
 					f+=t;
 			}
@@ -247,10 +233,10 @@ public class backGroundListener extends Service  {
 		double a = Math.sqrt(l);
 		for (int k=0;k<f.length;k++){
 			nD[k]=f[k]/a;
-			if(nD[k]>=.99){
+			if(nD[k]>=.5){
 				detected(curSound);
 			}
-			//System.out.println(f[k]/a);
+			System.out.println(f[k]/a);
 		}
 		return nD;
 	}
@@ -258,26 +244,31 @@ public class backGroundListener extends Service  {
 	public float[][] getMatrixFromFile(File f,FloatFFT fft){
 		DataInputStream dis = makeDIS(f);
 		AudioEvent ae = null;
-		int r =0;
 		float[][] fl = new float[numVectors][buffer.length*2];
+		float[] fttFl = new float[buffer.length];// = new float[buffer.length];
 		byte[] read = new byte[bufferSize];
 		for (int i=0;i<numVectors;i++){
-					try {
-						r=dis.read(read,i*buffer.length,buffer.length);
-					} catch (IOException e) {
-						System.out.println("xmltemplatereadinerror");
-						e.printStackTrace();
-					}
-					//create audio event
-					ae = new AudioEvent(tarForm,buffer.length);
-					
-					//Set over lap (this needs work)
-					ae.setOverlap(buffer.length/2);
-					ae.setFloatBufferWithByteBuffer(buffer);
-					
-					
+				try {
+					dis.read(read,i*buffer.length,buffer.length);
+				} catch (IOException e) {
+					System.out.println("xmltemplatereadinerror");
+					e.printStackTrace();
+				}
+				//create audio event (this is used to get the float array for sound slice then forward fft
+				ae = new AudioEvent(tarForm,buffer.length);
+				ae.setOverlap(buffer.length/2);
+				ae.setFloatBufferWithByteBuffer(read);
+				System.out.println(read.length);
+				System.out.println(fttFl.length);
+				for (int k=0;k<buffer.length;k++)
+				fttFl=ae.getFloatBuffer();
 				
-			
+				fft.complexForward(fttFl);
+				
+				//save sound slice backwards for eventual cross correlation
+				for(int k =0;k<buffer.length*2; k++){
+					fl[i][k] = fttFl[(buffer.length-1)-k];
+				}
 		}
 		try {
 			dis.close();

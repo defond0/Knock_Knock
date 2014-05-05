@@ -277,7 +277,6 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		return aF;
 		
 	}
-	
 
 	public void saveFeatureValues(File FV){
 		//Set up file Stream
