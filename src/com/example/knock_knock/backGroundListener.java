@@ -61,10 +61,6 @@ public class backGroundListener extends Service  {
 			if(b!=null){
 				if(b.getString("sound") != null){
 					curSound = b.getString("sound");
-					bufferSize = AudioRecord.getMinBufferSize(
-			        		SAMPLE_RATE,
-			        		AudioFormat.CHANNEL_IN_MONO,
-			        		AudioFormat.ENCODING_PCM_16BIT);		
 					if((curSound!="")){				
 						launchControlThread();
 				}
@@ -118,6 +114,10 @@ public class backGroundListener extends Service  {
 			public void run(){
 				windowSums= new float[64];
 				//set up recorder
+				bufferSize = AudioRecord.getMinBufferSize(
+		        		SAMPLE_RATE,
+		        		AudioFormat.CHANNEL_IN_MONO,
+		        		AudioFormat.ENCODING_PCM_16BIT);		
 				buffer = new byte[bufferSize];
 				recorder = new AudioRecord(
 				        		MediaRecorder.AudioSource.MIC,
@@ -130,11 +130,12 @@ public class backGroundListener extends Service  {
 				recorder.startRecording();
 			
 				//Set up float array for storing the mfccs as they are calculated
+				FloatFFT fft = new FloatFFT(buffer.length);
 				inputValuesMatrix=new float[numVectors][64];
 				float[] audioBufferFFT;
 				float[][] templateMatrix= getMatrixFromFile(new File(Environment.getExternalStoragePublicDirectory(
 						Environment.DIRECTORY_MUSIC).
-						getAbsolutePath()+File.separator+curSound+".xml"));
+						getAbsolutePath()+File.separator+curSound+".xml"), fft);
 				//float[][] templateMatrix = new float[64][64];
 				
 				//Set up mfcc extractor
@@ -150,14 +151,14 @@ public class backGroundListener extends Service  {
 				int n = 0;
 				double tmp;
 				int fx,gx;
-				FloatFFT fft = new FloatFFT(32);
+				
 				while (on&&cur<rec){
 					int M = n%numVectors;
 							
 					//read recorder
 					long res = recorder.read(buffer, 0, buffer.length);
 					//create audio event
-					ae = new AudioEvent(tarForm, res);
+					ae = new AudioEvent(tarForm, buffer.length);
 					//Set overlap 
 					ae.setOverlap(buffer.length/2);
 					ae.setFloatBufferWithByteBuffer(buffer);
@@ -193,6 +194,7 @@ public class backGroundListener extends Service  {
 						cV[fx]=(float) tmp;
 					}
 					if(n>64){
+						//////CHANGE DETECTION THRESHOLD IN NORMALIZE DETECT.
 						normalizeDetect(cV);
 					}
 					Cur_CONVO=sum(cV);
@@ -253,19 +255,29 @@ public class backGroundListener extends Service  {
 		return nD;
 	}
 		
-	public float[][] getMatrixFromFile(File f){
+	public float[][] getMatrixFromFile(File f,FloatFFT fft){
 		DataInputStream dis = makeDIS(f);
-		float[][] fl = new float[numVectors][64];
-		
+		AudioEvent ae = null;
+		int r =0;
+		float[][] fl = new float[numVectors][buffer.length*2];
+		byte[] read = new byte[bufferSize];
 		for (int i=0;i<numVectors;i++){
-			for (int j=0; j<64;j++){
-				try {
-					fl[i][j]=dis.readFloat();
-				} catch (IOException e) {
-					System.out.println("getMatrixFromFile Error"+numVectors+", 64" +"in ReadFloat at "+ i+", "+j);
-					//e.printStackTrace();
-				}
-			}
+					try {
+						r=dis.read(read,i*buffer.length,buffer.length);
+					} catch (IOException e) {
+						System.out.println("xmltemplatereadinerror");
+						e.printStackTrace();
+					}
+					//create audio event
+					ae = new AudioEvent(tarForm,buffer.length);
+					
+					//Set over lap (this needs work)
+					ae.setOverlap(buffer.length/2);
+					ae.setFloatBufferWithByteBuffer(buffer);
+					
+					
+				
+			
 		}
 		try {
 			dis.close();

@@ -47,7 +47,6 @@ public class TrainingListen extends Activity implements Handler.Callback{
 	private Button recordButton;
 	static final int SAMPLE_RATE = 16000;
 	private byte[] buffer;
-	private int bufferSize;
 	private AudioRecord recorder;
 	final static long recTime = 2500;
 	final static String FV_PATH = "mfcc_val.xml";
@@ -157,17 +156,24 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		Thread recordThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-				//Set up Recorder 
-				setupRecorder();	
-				MAX_CONVO=0;
-				//Set up mfcc extractor
-				MFCC ap = new MFCC(buffer.length/2,SAMPLE_RATE);
+				//Set up Recorder 	
 				be.hogent.tarsos.dsp.AudioFormat tarForm = getFormat();
+				int minBufferSize = AudioRecord.getMinBufferSize(
+		        		SAMPLE_RATE,
+		        		AudioFormat.CHANNEL_IN_MONO,
+		        		AudioFormat.ENCODING_PCM_16BIT);
+				buffer = new byte[minBufferSize];
+				recorder = new AudioRecord(
+		        		MediaRecorder.AudioSource.MIC,
+		        		SAMPLE_RATE,
+		        		AudioFormat.CHANNEL_IN_MONO,
+		        		AudioFormat.ENCODING_PCM_16BIT,
+		        		minBufferSize);
 				AudioEvent ae = null;
 				
 				//Set up float array for storing the mfccs as they are calculated
 				long secs = recTime/1000;
-				long numSamples = secs*SAMPLE_RATE;
+			
 				numVectors = 64;
 				featureValues=new float[numVectors][64];
 				FloatFFT fft = new FloatFFT(32);
@@ -187,43 +193,47 @@ public class TrainingListen extends Activity implements Handler.Callback{
 				//Recording Loop
 				int i =0;
 				
-				float[] audioBufferFFT= new float[32];
+				//Save Features
+				File FV = makeNewFile(FV_PATH);
+				DataOutputStream dos = makeDOS(FV); 	
+				
+				
+				float[] audioBufferFFT= new float[buffer.length];
 				while (cur<rec){
 					
 					//read recorder
 					long res = recorder.read(buffer, 0, buffer.length);
 					
 					//create audio event
-					ae = new AudioEvent(tarForm, res);
+					ae = new AudioEvent(tarForm, buffer.length);
 					
 					//Set over lap (this needs work)
 					ae.setOverlap(buffer.length/2);
 					ae.setFloatBufferWithByteBuffer(buffer);
+					System.out.println(buffer.length);
+						try {
+							dos.write(buffer,0,minBufferSize);
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
 					
-					//use TarsosDsp MFCC to process signal
-					ap.process(ae);
-					
-					//save 30 floats that MFCC returns, zero pad and forward fft
-					audioBufferFFT=ap.getMFCC();
-					for (int j = 0; j < 30; ++j) {
-						featureValues[i][2*j] = audioBufferFFT[j];
-						featureValues[i][2*j+1] = 0;
-					}
-					for (int j=29;j<32;j++){
-						featureValues[i][2*j] = 0;
-						featureValues[i][2*j+1] = 0;
-					}
-					fft.complexForward(featureValues[i]);
+						
 					//loop maintenance 
 					i+=1;
 					System.out.println(i);
 					cur = System.currentTimeMillis();
 				}
 				
+				try {
+					dos.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				
 				
 				
-				System.out.println("Max CONVO "+MAX_CONVO);
 				if(debug){
 					long stop = System.currentTimeMillis();
 					System.out.println("Stop ~ "+stop);
@@ -232,28 +242,9 @@ public class TrainingListen extends Activity implements Handler.Callback{
 				recorder.stop();
 				recorder.release();
 				recorder = null;
+			
+		
 				
-				
-				//for(int n = 0; n< 3*numVectors;n++){
-				int M=numVectors;
-				//System.out.println("n: "+n+ " convo: "+tmp);
-				for (int m=0; m<2*M;m++){
-					int fx = Math.abs(m%M);
-					int gx = Math.abs((M-m)%M);
-					float tmp=complexMultSumFFT(featureValues[fx],featureValues[gx],fft);
-					System.out.println("convo: "+tmp);
-						
-					}
-				
-				//}
-				
-				
-				//Save Features
-				File FV = makeNewFile(FV_PATH);
-				saveFeatureValues(FV);
-				if(debug){
-					checkFile(FV);
-				}
 			}
 			});
 			recordThread.run();	
@@ -287,22 +278,7 @@ public class TrainingListen extends Activity implements Handler.Callback{
 		
 	}
 	
-	public void setupRecorder(){
-	int minBufferSize = AudioRecord.getMinBufferSize(
-        		SAMPLE_RATE,
-        		AudioFormat.CHANNEL_IN_MONO,
-        		AudioFormat.ENCODING_PCM_16BIT);
-	bufferSize = minBufferSize;
-    buffer = new byte[minBufferSize];
-	recorder = new AudioRecord(
-        		MediaRecorder.AudioSource.MIC,
-        		SAMPLE_RATE,
-        		AudioFormat.CHANNEL_IN_MONO,
-        		AudioFormat.ENCODING_PCM_16BIT,
-        		minBufferSize);
-	 
-	}
-	
+
 	public void saveFeatureValues(File FV){
 		//Set up file Stream
 		DataOutputStream dos = makeDOS(FV); 	
@@ -410,79 +386,11 @@ public class TrainingListen extends Activity implements Handler.Callback{
 				}
 			}
 		}
-		printFeatureValues(fl);
+		
 	}
 
-	public void printFeatureValues(float[][] f){
-		System.out.println("CHECKING FEATURE VAULES");
-		int i = 0;
-		for (i=0;i<numVectors;i++){
-			printMFCC(f[i],i);
-		}
-	}
 	
-	public void printMFCC(float[] f, int i){
-		//System.out.println(ae.getSamplesProcessed());
-		System.out.println("_______MFC#"+i+"_______");
-		System.out.println(f[0]);
-		System.out.println(f[1]);
-		System.out.println(f[2]);
-		System.out.println(f[3]);
-		System.out.println(f[4]);
-		System.out.println(f[5]);
-		System.out.println(f[6]);
-		System.out.println(f[7]);
-		System.out.println(f[8]);
-		System.out.println(f[9]);
-		System.out.println(f[10]);
-		System.out.println(f[11]);
-		System.out.println(f[12]);
-		System.out.println(f[13]);
-		System.out.println(f[14]);
-		System.out.println(f[15]);
-		System.out.println(f[16]);
-		System.out.println(f[17]);
-		System.out.println(f[18]);
-		System.out.println(f[19]);
-		System.out.println(f[20]);
-		System.out.println(f[21]);
-		System.out.println(f[22]);
-		System.out.println(f[23]);
-		System.out.println(f[24]);
-		System.out.println(f[25]);
-		System.out.println(f[26]);
-		System.out.println(f[27]);
-		System.out.println(f[28]);
-		System.out.println(f[29]);
-	}
-
-//////TEST CODE ///////
-//				float tmp = 0;
-//				float [][] matrix1 = new float[numVectors][64];
-//				float [][] matrix2 = new float[numVectors][64];
-//				
-//				float[][] testMatrix = new float[3*numVectors][64];
-//				for(int n = 0; n< 3*numVectors;n++){
-//					for (int l = 0; l <numVectors;l++){
-//						if(n>=0&&n<numVectors){
-//							testMatrix[n][l]=1;
-//						}
-//						if(n>=numVectors&&n<=2*numVectors){
-//							testMatrix[n][l]=featureValues[n%numVectors][l];
-//						}
-//						if(n>2*numVectors){
-//							testMatrix[n][l]=2;
-//						
-//						}
-//					}
-//				}
-
-//
-//				
-//				
-//				
-//				//////////////////////////////////////////////
-
+	
 
 }
 
