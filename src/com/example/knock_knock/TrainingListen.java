@@ -105,19 +105,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 	}
 	
 	
-//    @Override
-//    public void onPause() {
-//    	super.onPause();
-//    	audioDispatcher.stop();
-//    }
-//    @Override
-//    public void onResume() {
-//    	super.onPause();
-//      	audioDispatcher = new MicrophoneAudioDispatcher(dSAMPLE_RATE, dBufferSize, overlap);
-//      	audioDispatcher.addAudioProcessor(new Oscilloscope(this));
-//    	(new Thread(audioDispatcher)).start();
-//    }
-	
 	   class DrawView extends View{
 	    	public float data[];
 
@@ -204,18 +191,14 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 					Message msg = new Message();
 					msg.obj="Listening";
 					adamHandler.sendMessage(msg);
-				}
-				
-			},3000);
-			adamHandler.postDelayed(new Runnable(){	
-				public void run(){
-					
-					Message msg = new Message();
-					msg.obj="Listening";
-					adamHandler.sendMessage(msg);
 					TrainingListen.this.listen();
 					}
 			},3000);
+			adamHandler.postDelayed(new Runnable(){	
+				public void run(){
+					TrainingListen.this.listen();
+					}
+			},3001);
 			adamHandler.postDelayed(new Runnable(){	
 				public void run(){
 					Message msg = new Message();
@@ -232,7 +215,7 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 						dListen();
 					}	
 				}
-			},3000+recTime);
+			},3001+recTime);
 		}
 		else {
 			//recordButton.setText(getResources().getString(R.string.start));
@@ -250,6 +233,7 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 		
 		String msg = (String)arg0.obj;
 		recordButton.setText(" "+ msg);
+		recordButton.invalidate();
 		return false;
 	}		
 	
