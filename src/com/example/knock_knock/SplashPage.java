@@ -78,20 +78,17 @@ public class SplashPage extends Activity {
 	public void startListening() {
 		final SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
 		PreferenceStorage.setON_OFF(prefs,true);
-		Thread listen = new Thread(new Runnable(){
-			@Override
-			public void run(){
+	
 				checkedSounds = PreferenceStorage.getAllCheckedSounds(prefs);
 				Iterator<String> soundIter = checkedSounds.iterator();
 				while(soundIter.hasNext()){
 					String curSound = soundIter.next();
 					Intent i = new Intent(SplashPage.this, backGroundListener.class);
 					i.putExtra("sound",curSound);
+					System.out.println(curSound);
 					SplashPage.this.startService(i);  ///SET DATA NOT OBJ (DIF PROCESS)
 				}
-			}
-		});
-		listen.run();
+		
 	}
 
 	public void stopListenting() {

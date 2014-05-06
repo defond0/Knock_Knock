@@ -152,10 +152,9 @@ public class backGroundListener extends Service  {
 				int fx,gx;
 				FloatFFT fft = new FloatFFT(32);
 				while (on&&cur<rec){
-					int M = n%numVectors;
-							
+					int M = n%numVectors;						
 					//read recorder
-					long res = recorder.read(buffer, 0, buffer.length);
+					recorder.read(buffer, 0, buffer.length);
 					//create audio event
 					ae = new AudioEvent(tarForm, buffer.length);
 					//Set overlap 
@@ -257,7 +256,7 @@ public class backGroundListener extends Service  {
 	public float[][] getMatrixFromFile(File f){
 		DataInputStream dis = makeDIS(f);
 		float[][] fl = new float[numVectors][64];
-		
+		//read in template matrix for cross correlation
 		for (int i=0;i<numVectors;i++){
 			for (int j=0; j<64;j++){
 				try {
