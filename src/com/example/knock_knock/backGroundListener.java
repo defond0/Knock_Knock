@@ -1,127 +1,336 @@
 package com.example.knock_knock;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+
 
 import be.hogent.tarsos.dsp.AudioEvent;
-import be.hogent.tarsos.dsp.onsets.ComplexOnsetDetector;
-import be.hogent.tarsos.dsp.onsets.OnsetHandler;
-import be.hogent.tarsos.dsp.onsets.PercussionOnsetDetector;
-import be.hogent.tarsos.dsp.pitch.PitchDetectionHandler;
-import be.hogent.tarsos.dsp.pitch.PitchDetectionResult;
-import be.hogent.tarsos.dsp.pitch.PitchProcessor;
+import be.hogent.tarsos.dsp.mfcc.MFCC;
+import be.hogent.tarsos.dsp.util.fft.FloatFFT;
+
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Vibrator;
 
 
 
-public class backGroundListener extends Service implements OnsetHandler, PitchDetectionHandler {
+public class backGroundListener extends Service  {
 	//http://www.vogella.com/tutorials/AndroidServices/article.html
 	
+	final static boolean debug=true;
 	final static int SAMPLE_RATE = 16000;
-	private byte[] buffer;
 	private int bufferSize;
-	private be.hogent.tarsos.dsp.AudioFormat tarForm;
-	private boolean rec;
-	private Set<String> checkedSounds;
+	private String curSound;
 	public final static String EXTRA_MESSAGE = "com.example.backGroundList.MESSAGE";
 	public final static String SOUND_NAME = "com.example.backGroundList.SOUNDNAME";
 	public static final String PREFS_NAME = "KnockKnockPrefs";
-	private String notification;
+	final static long recTime = 2500; 
+	final static int numVectors = 64;
+	private float[][] inputValuesMatrix;
+	private SharedPreferences prefs;
+	private MFCC ap;
+	private float Cur_CONVO;
+	private boolean on;
+	final int numListens = 2;
+	final int overlap = numListens/2-1;
+	byte[] buffer;
+	float[] windowSums;
+	AudioRecord recorder;
+	be.hogent.tarsos.dsp.AudioFormat tarForm;
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-	    //TODO do something useful
-		rec = true;
-		//Get SharedPreferences and loud up sounds
-		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
-		checkedSounds = PreferenceStorage.getAllCheckedSounds(prefs);
-		notification = "";
-		listen();
+		prefs = getSharedPreferences(PREFS_NAME, 0);
+		on = PreferenceStorage.getON_OFF(prefs);
+		Bundle b = intent.getExtras();
+		curSound = "";
+		if(on){
+			if(b!=null){
+				if(b.getString("sound") != null){
+					curSound = b.getString("sound");
+					bufferSize = AudioRecord.getMinBufferSize(
+			        		SAMPLE_RATE,
+			        		AudioFormat.CHANNEL_IN_MONO,
+			        		AudioFormat.ENCODING_PCM_16BIT);		
+					if((curSound!="")){				
+						launchControlThread();
+				}
+			}
+		}
+		}
+	    else{
+	    	stopSelf();
+	    }
 		return super.onStartCommand(intent,flags,startId);
 	  }
-	
-	
 	
 	@Override
 	public IBinder onBind(Intent arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	private void listen(){	
-		//set up recorder
-		bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);					
-		buffer = new byte[bufferSize];
-		final AudioRecord recorder = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+	
+	@Override
+	public void onDestroy(){
+		System.out.println("ding");
+		backGroundListener.super.onDestroy() ;
 		
-		//set up "clap" detector //
-		final PercussionOnsetDetector pd = new PercussionOnsetDetector(SAMPLE_RATE, bufferSize/2, this, 60, 6);
-		
-		//set up "all" detector //
-		final PitchProcessor pp = new PitchProcessor( PitchProcessor.PitchEstimationAlgorithm.AMDF,SAMPLE_RATE,bufferSize,this);
-		
-		//start recording
-		recorder.startRecording();
-		tarForm= new be.hogent.tarsos.dsp.AudioFormat(SAMPLE_RATE,16,1,true,false);
-		Thread listen = new Thread(new Runnable(){
-			public void run(){	
-				while (rec){
-					int sig = recorder.read(buffer,0,bufferSize);
-					AudioEvent ae = new AudioEvent(tarForm, sig);
-					ae.setFloatBufferWithByteBuffer(buffer);
-					
-					//WOZ for clap
-					if(checkedSounds.contains("Clap")){
-						pd.process(ae);
-					}
-					//Wos for all
-					if(checkedSounds.contains("Whistle")){
-						pp.process(ae);
-					}
-				}
-				recorder.stop();
-			}
-		});
-		listen.start();
 	}
 	
-
-	@Override
-	public void handleOnset(double time, double salience) {
-		//only here to test out and make it run for claps
-		notification = "Clap";
-		rec = false;
-		Intent i = new Intent(this, Notification_Screen.class);
-		i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-		i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-		i.putExtra(EXTRA_MESSAGE, notification);
-		//fix once we can detect different sounds
-		i.putExtra(SOUND_NAME, notification);
-	    startActivity(i);
-	    this.stopSelf();
-	}
-
-	@Override
-	public void handlePitch(PitchDetectionResult pitchDetectionResult,
-			AudioEvent audioEvent) {
-		//only here to test out and make it run for whistle
-		if(pitchDetectionResult.isPitched()){
-			notification = "Whistle";
-			rec = false;
-			Intent i = new Intent(this, Notification_Screen.class);
-			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-			i.putExtra(EXTRA_MESSAGE, notification);
-			//fix when we can detect different sounds
-			i.putExtra(SOUND_NAME, notification);
-		    startActivity(i);
-		    this.stopSelf();
+	
+	public void detected(String sound){
+		boolean alert = PreferenceStorage.isAlertNotifOn(prefs, curSound);
+		boolean vibe = PreferenceStorage.isVibrateNotifOn(prefs, curSound);
+	
+		if(vibe){
+			Vibrator v = (Vibrator)getSystemService(Context.VIBRATOR_SERVICE);
+			// Vibrate for 500 milliseconds
+			v.vibrate(200);
 		}
+		if(alert){
+			Intent i = new Intent(this, Notification_Screen.class);
+			i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			i.putExtra("notification", sound);
+			startActivity(i);
+		}
+		SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+		PreferenceStorage.setON_OFF(prefs,false);
+	}
+	
+	private void listen(){	
+		
+		///listens to ten seconds of audio input and convolutes it with the training template
+		Thread listen = new Thread(new Runnable(){
+			@Override
+			public void run(){
+				windowSums= new float[64];
+				//set up recorder
+				buffer = new byte[bufferSize];
+				recorder = new AudioRecord(
+				        		MediaRecorder.AudioSource.MIC,
+				        		SAMPLE_RATE,
+				        		AudioFormat.CHANNEL_IN_MONO,
+				        		AudioFormat.ENCODING_PCM_16BIT,
+				        		bufferSize);
+				tarForm = getFormat();
+				//start recording
+				recorder.startRecording();
+			
+				//Set up float array for storing the mfccs as they are calculated
+				inputValuesMatrix=new float[numVectors][64];
+				float[] audioBufferFFT;
+				float[][] templateMatrix= getMatrixFromFile(new File(Environment.getExternalStoragePublicDirectory(
+						Environment.DIRECTORY_MUSIC).
+						getAbsolutePath()+File.separator+curSound+".xml"));
+				//float[][] templateMatrix = new float[64][64];
+				
+				//Set up mfcc extractor
+				ap = new MFCC(bufferSize/2,SAMPLE_RATE);
+				AudioEvent ae = null;
+			
+				//Recording Loop
+				SharedPreferences prefs = getSharedPreferences(PREFS_NAME, 0);
+				Cur_CONVO=0;//PreferenceStorage.getCurConvo(prefs,curSound);
+				long cur = System.currentTimeMillis();
+				System.out.println(curSound+ " Starting at: "+cur);
+				long rec = cur + (recTime*5);
+				int n = 0;
+				double tmp;
+				int fx,gx;
+				FloatFFT fft = new FloatFFT(32);
+				while (on&&cur<rec){
+					int M = n%numVectors;						
+					//read recorder
+					recorder.read(buffer, 0, buffer.length);
+					//create audio event
+					ae = new AudioEvent(tarForm, buffer.length);
+					//Set overlap 
+					ae.setOverlap(buffer.length/2);
+					ae.setFloatBufferWithByteBuffer(buffer);
+					
+					//use TarsosDsp MFCC to process signal
+					ap.process(ae);
+			
+					//save 30 floats that MFCC returns and ffts them
+					
+					audioBufferFFT=ap.getMFCC();
+					for (int j = 0; j < 32; ++j) {
+						if(j<=29){
+							inputValuesMatrix[M][2*j]=audioBufferFFT[j];
+						}
+						else{
+							inputValuesMatrix[M][2*j]=0; //zero padding
+						}
+							inputValuesMatrix[M][2*j+1]=0;
+						
+					}
+					fft.complexForward(inputValuesMatrix[M]);
+					
+					
+					// Convolution via complex multiplixation 
+					// http://en.wikipedia.org/wiki/Convolution   this is mostly looking at the section on discrete convolution and circular discrete convolution
+					//float nSum = 0;
+					tmp=0;
+					float[]cV = new float [2*M];
+					for (int m=-1*M; m<M;m++){
+						fx = Math.abs(m%M);
+						gx = Math.abs((M-m)%M);
+						tmp=complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft); // perhaps reverse template?
+						cV[fx]=(float) tmp;
+					}
+					
+					Cur_CONVO=sum(cV);
+					windowSums[M]=Cur_CONVO;
+					if(n%32==0){
+						normalizeDetect(windowSums);
+					}
+					on = PreferenceStorage.getON_OFF(prefs);
+					n+=1;	
+					cur = System.currentTimeMillis();					
+				}
+			
+				recorder.stop();			
+				recorder.release();
+				recorder = null;
+				on = PreferenceStorage.getON_OFF(prefs);
+				stopSelf();
+				
+			}
+		});
+		listen.run();
+		listen.interrupt();
+		listen=null;
+	}
+	
+	public float complexMultSumFFT(float [] incoming, float[]template, FloatFFT fft){
+		
+		//NOTE TEMPLATE MUST BE ALREADY HAVE BEEN FORWARDFTT INTRAINING 
+		
+			float[] v = new float[64];
+			float f =0;
+			float t =0;
+			int k;
+			for (int j = 0; j < 32; ++j) {
+				k=62-2*j;
+				v[2*j]   = incoming[2*j]*template[k] - incoming[2*j+1]*template[k+1]; // real
+				v[2*j+1] = incoming[2*j+1]*template[k] + incoming[2*j]*template[k+1]; // imaginary
+			}
+			fft.complexInverse(v, true);	
+			for (int j = 0; j < 32; ++j) {
+					t=v[2*j];
+					f+=t;
+			}
+			return f;
+	}
+	
+	public double[] normalizeDetect(float[] f){
+		double l = 0;
+		double [] nD = new double[f.length];
+		for (int k=0;k<f.length;k++){
+			l += f[k]*f[k];
+		}
+		double a = Math.sqrt(l);
+		for (int k=0;k<f.length;k++){
+			nD[k]=f[k]/a;
+			if(nD[k]>=.5){
+				detected(curSound);
+			}
+			//System.out.println(f[k]/a);
+		}
+		return nD;
+	}
+		
+	public float[][] getMatrixFromFile(File f){
+		DataInputStream dis = makeDIS(f);
+		float[][] fl = new float[numVectors][64];
+		//read in template matrix for cross correlation
+		for (int i=0;i<numVectors;i++){
+			for (int j=0; j<64;j++){
+				try {
+					fl[i][63-j]=dis.readFloat();
+				} catch (IOException e) {
+					System.out.println("getMatrixFromFile Error"+numVectors+", 64" +"in ReadFloat at "+ i+", "+j);
+					//e.printStackTrace();
+				}
+			}
+		}
+		try {
+			dis.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return fl;
+	}
+	
+	public be.hogent.tarsos.dsp.AudioFormat getFormat(){
+		be.hogent.tarsos.dsp.AudioFormat aF = new be.hogent.tarsos.dsp.AudioFormat(SAMPLE_RATE,16,1,true,false);
+		return aF;
 		
 	}
+	
+	public DataInputStream makeDIS(File f){
+		DataInputStream dis = null;
+		try {
+			dis = new DataInputStream(new FileInputStream(f));
+		} catch (FileNotFoundException e1) {
+			System.out.println("DIS error with " + f.getPath());
+			e1.printStackTrace();
+		}
+		return dis;
+		
+	}
+	
+	public float sum(float[] f1){
+		float s = 0;
+		for (int i=0;i<f1.length;i++){
+			s+=f1[i];
+		}
+		return s;
+	}
+
+	private void launchControlThread(){
+	//Start numlistening listening Threads (which will each listen to 10 seconds of incoming audio, then kill the background listener, after starting a new one at the half way 
+	//point.
+	final Handler adamHandler = new Handler();
+	for (int c=0; c<numListens;c++){
+		on = PreferenceStorage.getON_OFF(prefs);
+		final long listenCount = c;
+		long offset = c*10000;
+		adamHandler.postDelayed(new Runnable(){	
+			public void run(){
+				backGroundListener.this.listen();
+				if(on){
+					if(listenCount==(numListens-1)){ //start new bglistener
+						Intent i = new Intent(backGroundListener.this, backGroundListener.class);
+						i.putExtra("sound",curSound);
+						backGroundListener.this.startService(i);
+						backGroundListener.this.stopSelf();
+					}
+				}
+				else{
+					backGroundListener.this.stopSelf();
+				}
+			}
+		},offset);
+	}
+	
 }
+}
+
+
+
+
