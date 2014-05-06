@@ -27,7 +27,7 @@ public class Notification_Screen extends Activity {
 		//Change background color
 		String soundName = intent.getStringExtra(backGroundListener.SOUND_NAME);
 		SharedPreferences prefs = getSharedPreferences(SoundSettings.PREFS_NAME, 0);
-		int color =Color.parseColor(PreferenceStorage.getAlertColor(prefs,soundName));
+		int color = PreferenceStorage.getAlertColor(prefs,soundName, getResources());
 		RelativeLayout container = (RelativeLayout) findViewById(R.id.notificationScreenContainer);
 		container.setBackgroundColor(color);
 		//Default listening

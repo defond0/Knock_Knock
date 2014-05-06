@@ -53,12 +53,16 @@
     <string name="alertColorBlue">Blue</string>
     <string name="alertColorGreen">Green</string>
     <string name="alertColorPurple">Purple</string>
+    <string name="alertColorYellow">Yellow</string>
+    <string name="alertColorPeach">Peach</string>
     <string name="title_activity_specific_sound_settings">SpecificSoundSettings</string>
     <string name="title_activity_notification_preferences">NotificationPreferencesActivity</string>
     <string name="delete_sound">Delete Sound</string>
-    <color name="Red">#E81616</color>
-    <color name="Green">#20AC0B</color>
+    <color name="Red">#EE3753</color>
+    <color name="Green">#519B50</color>
     <color name="Blue">#0009FF</color>
-    <color name="Purple">#9100FF</color>
+    <color name="Purple">#884DA1</color>
+    <color name="Yellow">#cdc12d</color>
+    <color name="Peach">#e39a87</color>
 
 </resources>

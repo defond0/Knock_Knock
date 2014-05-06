@@ -97,7 +97,7 @@ public class SoundSettings extends Activity {
 			});
 			
 			//Add color 
-			int color = Color.parseColor(PreferenceStorage.getAlertColor(prefs,curSound));
+			int color = PreferenceStorage.getAlertColor(prefs,curSound, getResources());
 			curRow.setBackgroundColor(color);
 			
 			

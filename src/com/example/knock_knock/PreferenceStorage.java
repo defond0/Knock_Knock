@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 
 public class PreferenceStorage {
 	
@@ -72,8 +73,8 @@ public class PreferenceStorage {
 		return prefs.getBoolean(soundName+PreferenceStorage.VIBRATE_NOTIF, true);
 	}
 	
-	public static String getAlertColor(SharedPreferences prefs, String soundName) {
-		return prefs.getString(soundName+PreferenceStorage.ALERT_COLOR, "Red");
+	public static int getAlertColor(SharedPreferences prefs, String soundName, Resources res) {
+		return (int) prefs.getLong(soundName+PreferenceStorage.ALERT_COLOR, res.getColor(R.color.Red));
 	}
 	
 	public static void setSound(SharedPreferences prefs, String soundName, boolean on) {
@@ -100,9 +101,9 @@ public class PreferenceStorage {
     	editor.commit();
 	}
 	
-	public static void setColor(SharedPreferences prefs, String soundName, String color) {
+	public static void setColor(SharedPreferences prefs, String soundName, int color) {
 		SharedPreferences.Editor editor = prefs.edit();
-		editor.putString(soundName+PreferenceStorage.ALERT_COLOR, color);
+		editor.putLong(soundName+PreferenceStorage.ALERT_COLOR, color);
     	editor.commit();
 	}
 	

@@ -62,16 +62,18 @@ public class NotificationSettings extends Activity {
 	private void loadAlertColorPreferences() {
 		//Set the radio button to the correct color that was previously chosen
 		//Default: red
-		String alertColor = PreferenceStorage.getAlertColor(prefs, soundName);
+		int alertColor = PreferenceStorage.getAlertColor(prefs, soundName, getResources());
 		RadioButton rb = null;
-		if (alertColor.equals("Red")) {
+		if (alertColor == getResources().getColor(R.color.Red)) {
 			rb = (RadioButton) findViewById(R.id.alertColorRed);
-		} else if (alertColor.equals("Blue")) {
-			rb = (RadioButton) findViewById(R.id.alertColorBlue);
-		} else if (alertColor.equals("Green")) {
+		} else if (alertColor == getResources().getColor(R.color.Green)) {
 			rb = (RadioButton) findViewById(R.id.alertColorGreen);
-		} else if (alertColor.equals("Purple")) {
+		} else if (alertColor == getResources().getColor(R.color.Purple)) {
 			rb = (RadioButton) findViewById(R.id.alertColorPurple);
+		} else if (alertColor == getResources().getColor(R.color.Yellow)) {
+			rb = (RadioButton) findViewById(R.id.alertColorYellow);
+		} else if (alertColor == getResources().getColor(R.color.Peach)) {
+			rb = (RadioButton) findViewById(R.id.alertColorPeach);
 		}
 		rb.toggle();
 	}
@@ -80,16 +82,19 @@ public class NotificationSettings extends Activity {
 		//Change the stored color alert preference to the matching radio button
 		switch(view.getId()) {
         	case R.id.alertColorRed:
-        		PreferenceStorage.setColor(prefs, soundName, "Red");
-        		break;
-        	case R.id.alertColorBlue:
-        		PreferenceStorage.setColor(prefs, soundName, "Blue");
+        		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Red));
         		break;
         	case R.id.alertColorGreen:
-        		PreferenceStorage.setColor(prefs, soundName, "Green");
+        		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Green));
         		break;
         	case R.id.alertColorPurple:
-        		PreferenceStorage.setColor(prefs, soundName, "Purple");
+        		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Purple));
+        		break;
+        	case R.id.alertColorYellow:
+        		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Yellow));
+        		break;
+        	case R.id.alertColorPeach:
+        		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Peach));
         		break;
 		}
 	}

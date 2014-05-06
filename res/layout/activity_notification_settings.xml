@@ -82,12 +82,6 @@
         android:layout_height="wrap_content"
         android:text="@string/alertColorRed"
         android:onClick="onAlertColorSelected"/>
-    
-     <RadioButton android:id="@+id/alertColorBlue"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/alertColorBlue"
-        android:onClick="onAlertColorSelected"/>
      
     <RadioButton android:id="@+id/alertColorGreen"
         android:layout_width="wrap_content"
@@ -99,6 +93,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/alertColorPurple"
+        android:onClick="onAlertColorSelected"/>
+    
+    <RadioButton android:id="@+id/alertColorYellow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertColorYellow"
+        android:onClick="onAlertColorSelected"/>
+    
+    <RadioButton android:id="@+id/alertColorPeach"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/alertColorPeach"
         android:onClick="onAlertColorSelected"/>
     
     </RadioGroup>
