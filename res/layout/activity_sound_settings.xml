@@ -14,7 +14,7 @@
         android:paddingBottom="20dp"
         android:text="@string/soundSelectionTitle"
         android:gravity="center"
-        android:textSize="35sp"
+        android:textSize="50sp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 	    
 	<ScrollView
