@@ -58,6 +58,9 @@
     <string name="title_activity_specific_sound_settings">SpecificSoundSettings</string>
     <string name="title_activity_notification_preferences">NotificationPreferencesActivity</string>
     <string name="delete_sound">Delete Sound</string>
+    <string name="delete_sound_message">Are you sure you want to delete this sound?</string>
+    <string name="error">Error</string>
+    <string name="soundLabelError">Sound names must be at least one character.</string>
     <color name="Red">#EE3753</color>
     <color name="Green">#519B50</color>
     <color name="Blue">#0009FF</color>

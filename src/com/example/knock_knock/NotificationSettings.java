@@ -173,8 +173,8 @@ public class NotificationSettings extends Activity {
 	
 	public void deleteSound(View v) {
 		Builder dialog = new AlertDialog.Builder(this);
-	    dialog.setTitle("Delete Sound");
-	    dialog.setMessage("Are you sure you want to delete this sound?");
+	    dialog.setTitle(R.string.delete_sound);
+	    dialog.setMessage(R.string.delete_sound_message);
 	    dialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int which) { 
 	    		PreferenceStorage.delSound(prefs, soundName);

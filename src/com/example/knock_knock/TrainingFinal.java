@@ -6,6 +6,9 @@ import java.io.IOException;
 import android.os.Bundle;
 import android.os.Environment;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
@@ -49,12 +52,25 @@ public class TrainingFinal extends Activity {
 	public void saveSound(View view){
 		EditText newSoundLabel = (EditText) findViewById(R.id.newSoundLabel);
 		String label = newSoundLabel.getText().toString();
-		SharedPreferences prefs=getSharedPreferences(SoundSettings.PREFS_NAME, 0);
-		PreferenceStorage.addSound(prefs, label);
-		PreferenceStorage.setAverageConvo(prefs,label,maxConvo);
-		createNewTemplateFile(label);
-		Intent i = new Intent(this, SoundSettings.class);
-		startActivity(i);
+		if (label.length() > 0) {
+			SharedPreferences prefs=getSharedPreferences(SoundSettings.PREFS_NAME, 0);
+			PreferenceStorage.addSound(prefs, label);
+			PreferenceStorage.setAverageConvo(prefs,label,maxConvo);
+			createNewTemplateFile(label);
+			Intent i = new Intent(this, SoundSettings.class);
+			startActivity(i);
+		} else {
+			Builder dialog = new AlertDialog.Builder(this);
+		    dialog.setTitle(R.string.error);
+		    dialog.setMessage(R.string.soundLabelError);
+		    dialog.setPositiveButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+		        public void onClick(DialogInterface dialog, int which) { 
+		    		
+		        }
+		     });
+		    dialog.setIcon(android.R.drawable.ic_dialog_alert);
+		    dialog.show();
+		}
 	}
 	
 	public void createNewTemplateFile(String path){
