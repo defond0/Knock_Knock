@@ -8,10 +8,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.TableLayout;
@@ -38,7 +40,7 @@ public class SoundSettings extends Activity {
 		
 	}
 	
-	private void loadSoundSelectionPreferences() {
+	private void loadSoundSelectionPreferences() {		
 		//Get SharedPreferences and loud up sounds
 		prefs = getSharedPreferences(PREFS_NAME, 0);
 		allSounds = PreferenceStorage.getAllSounds(prefs);
@@ -51,41 +53,40 @@ public class SoundSettings extends Activity {
 		while(soundIter.hasNext()){
 			final String curSound = soundIter.next();
 			TableRow curRow = new TableRow(this);
+			curRow.setPadding(0, 25, 0, 25);
 			
 			//Label for sound
 			TextView text = new TextView(this);
 			text.setText(curSound);
-			text.setTextSize(20);
+			text.setTextSize(40);
+			text.setTextColor(Color.WHITE);
+			text.setPadding(10, 0, 20, 0);
 			
-			//Toggle button for sound
-			ToggleButton toggle = new ToggleButton(this);
+			//Toggle button for sound			
+			Button toggle = new Button(this);
 			if(PreferenceStorage.isSoundOn(prefs, curSound)){
-				toggle.setChecked(true);
+				toggle.setBackgroundResource(R.drawable.toggleon);
 			}
 			else{
-				toggle.setChecked(false);
+				toggle.setBackgroundResource(R.drawable.toggleoff);
 			}
-			toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+			toggle.setOnClickListener(new OnClickListener() {
 				@Override
-				public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-					if(isChecked){
-						PreferenceStorage.setSound(prefs, curSound, true);
-					} else {
+				public void onClick(View v) {
+					if(PreferenceStorage.isSoundOn(prefs,  curSound)) {
 						PreferenceStorage.setSound(prefs, curSound, false);
+						((Button) v).setBackgroundResource(R.drawable.toggleoff);
+					} else {
+						PreferenceStorage.setSound(prefs, curSound, true);
+						((Button) v).setBackgroundResource(R.drawable.toggleon);
 					}
-				    SharedPreferences.Editor editor = prefs.edit();
-				    editor.putStringSet("checkedSounds", checkedSounds);
-				    editor.commit();
 				}
 				
 			});
 			
 			//Settings button for sound
 			Button settings = new Button(this);
-			//settings.setText("Settings");
-			settings.setBackgroundResource(R.drawable.ic_action_edit);
-			settings.setScaleX(0.65f);
-			settings.setScaleY(0.65f);
+			settings.setBackgroundResource(R.drawable.arrow);
 			settings.setOnClickListener(new OnClickListener() {
 
 				@Override
@@ -95,48 +96,15 @@ public class SoundSettings extends Activity {
 				
 			});
 			
-			Button delete = new Button(this);
-			//settings.setText("Settings");
-			delete.setBackgroundResource(R.drawable.ic_action_discard);
-			delete.setScaleX(0.6f);
-			delete.setScaleY(0.6f);
-			delete.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					PreferenceStorage.delSound(prefs, curSound);
-					finish(); //TODO: refresh activity from within or redraw activity
-					startActivity(getIntent());
-				}
-				
-			});
-
-			//Align toggle button to right
-			/*TableLayout.LayoutParams params = new TableLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.MATCH_PARENT);
-			params.weight = 1.0f;
-			params.gravity=Gravity.RIGHT;
-			toggle.setLayoutParams(params);*/
-			
 			//Add color 
 			int color = Color.parseColor(PreferenceStorage.getAlertColor(prefs,curSound));
-			Button colorBox = new Button(this);
-			colorBox.setBackgroundColor(color);
-			colorBox.setOnClickListener(new OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					toNotificationPreferences(curSound);			
-				}
-				
-			});
+			curRow.setBackgroundColor(color);
 			
 			
 			//Add all components to view
 			curRow.addView(toggle);
 			curRow.addView(text);
-			curRow.addView(colorBox);
 			curRow.addView(settings);
-			curRow.addView(delete);
 			soundTable.addView(curRow);
 		}
 	}
