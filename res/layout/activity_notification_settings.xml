@@ -71,7 +71,7 @@
         android:textSize="20sp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
    
-   <RadioGroup
+   <RadioGroup android:id="@+id/alertColors"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_below="@+id/alertColorSettings"
@@ -102,5 +102,14 @@
         android:onClick="onAlertColorSelected"/>
     
     </RadioGroup>
+    
+   <Button android:id="@+id/deleteButton"
+       android:text="@string/delete_sound"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:layout_below="@+id/alertColors"
+       android:layout_marginTop="50dp"
+       android:textSize="16sp"
+       android:onClick="deleteSound" />
 
 </RelativeLayout>

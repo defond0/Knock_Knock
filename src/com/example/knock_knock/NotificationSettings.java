@@ -1,12 +1,16 @@
 package com.example.knock_knock;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.TextView;
@@ -160,6 +164,27 @@ public class NotificationSettings extends Activity {
 	public void toSoundMenu(){
 		Intent i = new Intent(this, SoundSettings.class);
 	    startActivity(i);
+	}
+	
+	public void deleteSound(View v) {
+		Builder dialog = new AlertDialog.Builder(this);
+	    dialog.setTitle("Delete Sound");
+	    dialog.setMessage("Are you sure you want to delete this sound?");
+	    dialog.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) { 
+	    		PreferenceStorage.delSound(prefs, soundName);
+	    		finish();
+	    		Intent i = new Intent(getBaseContext(), SoundSettings.class);
+	    	    startActivity(i);
+	        }
+	     });
+	    dialog.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int which) { 
+	            // do nothing
+	        }
+	     });
+	    dialog.setIcon(android.R.drawable.ic_dialog_alert);
+	    dialog.show();
 	}
 
 }
