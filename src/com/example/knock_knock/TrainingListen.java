@@ -191,7 +191,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 					Message msg = new Message();
 					msg.obj="Listening";
 					adamHandler.sendMessage(msg);
-					TrainingListen.this.listen();
 					}
 			},3000);
 			adamHandler.postDelayed(new Runnable(){	
