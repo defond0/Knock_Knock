@@ -50,7 +50,7 @@ public class backGroundListener extends Service  {
 	float[] windowSums;
 	AudioRecord recorder;
 	be.hogent.tarsos.dsp.AudioFormat tarForm;
-	final static double THRESHOLD=.3; 
+	final static double THRESHOLD=.32; 
 	
 	
 	@Override

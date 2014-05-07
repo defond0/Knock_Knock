@@ -14,7 +14,7 @@ import android.widget.TextView;
 public class Notification_Screen extends Activity {
 	
 	private TextView notificationText;
-
+	private SharedPreferences prefs ;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -29,9 +29,8 @@ public class Notification_Screen extends Activity {
 		notificationText = (TextView) findViewById(R.id.notificationText);
 		notificationText.setText(notification);
 		//Change background color
-		String soundName = intent.getStringExtra(backGroundListener.SOUND_NAME);
-		SharedPreferences prefs = getSharedPreferences(SoundSettings.PREFS_NAME, 0);
-		int color = PreferenceStorage.getAlertColor(prefs,soundName, getResources());
+		prefs = getSharedPreferences(SoundSettings.PREFS_NAME, 0);
+		int color = PreferenceStorage.getAlertColor(prefs,notification, getResources());
 		RelativeLayout container = (RelativeLayout) findViewById(R.id.notificationScreenContainer);
 		container.setBackgroundColor(color);
 		//Default listening

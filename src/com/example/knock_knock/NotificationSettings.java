@@ -85,6 +85,8 @@ public class NotificationSettings extends Activity {
         		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Red));
         		break;
         	case R.id.alertColorGreen:
+        		System.out.println(soundName);
+        		System.out.println("Green");
         		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Green));
         		break;
         	case R.id.alertColorPurple:

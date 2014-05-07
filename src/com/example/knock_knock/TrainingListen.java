@@ -197,7 +197,7 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 				public void run(){
 					TrainingListen.this.listen();
 					}
-			},3001);
+			},3050);
 			adamHandler.postDelayed(new Runnable(){	
 				public void run(){
 					Message msg = new Message();
@@ -214,7 +214,7 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 						dListen();
 					}	
 				}
-			},3001+recTime);
+			},3050+recTime);
 		}
 		else {
 			//recordButton.setText(getResources().getString(R.string.start));
@@ -229,10 +229,9 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 		
 	@Override
 	public boolean handleMessage(Message arg0) {
-		
 		String msg = (String)arg0.obj;
 		recordButton.setText(" "+ msg);
-		recordButton.invalidate();
+		recordButton.postInvalidate();
 		return false;
 	}		
 	
