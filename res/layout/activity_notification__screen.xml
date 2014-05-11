@@ -36,7 +36,7 @@
         android:layout_below="@+id/notificationText"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginTop="108dp"
+        android:layout_marginTop="128dp"
         android:paddingTop="25dp"
         android:paddingBottom="25dp"
         android:onClick="toSplashPage"
