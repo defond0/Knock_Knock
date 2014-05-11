@@ -62,7 +62,8 @@
         </activity>
         <activity
             android:name="com.example.knock_knock.NotificationSettings"
-            android:label="Notification Settings" >
+            android:label="Notification Settings"
+            android:parentActivityName="com.example.knock_knock.SoundSettings" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.knock_knock.SoundSettings" />
