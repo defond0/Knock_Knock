@@ -119,7 +119,16 @@ public class PreferenceStorage {
 	}
 	
 	public static int getAlertColor(SharedPreferences prefs, String soundName, Resources res) {
+		System.out.println("getColor "+ prefs.getLong(soundName+PreferenceStorage.ALERT_COLOR, res.getColor(R.color.Red)));
 		return (int) prefs.getLong(soundName+PreferenceStorage.ALERT_COLOR, res.getColor(R.color.Red));
+	}
+	
+	public static void setColor(SharedPreferences prefs, String soundName, int color) {
+		System.out.println("setColor "+color);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putLong(soundName+PreferenceStorage.ALERT_COLOR, color);
+    	editor.commit();
+    	System.out.println("getColor "+ prefs.getLong(soundName+PreferenceStorage.ALERT_COLOR, -116584));
 	}
 	
 	public static void setSound(SharedPreferences prefs, String soundName, boolean on) {
@@ -146,11 +155,7 @@ public class PreferenceStorage {
     	editor.commit();
 	}
 	
-	public static void setColor(SharedPreferences prefs, String soundName, int color) {
-		SharedPreferences.Editor editor = prefs.edit();
-		editor.putLong(soundName+PreferenceStorage.ALERT_COLOR, color);
-    	editor.commit();
-	}
+	
 	
 
 }

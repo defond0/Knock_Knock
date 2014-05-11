@@ -13,8 +13,10 @@ public final class R {
     public static final class color {
         public static final int Blue=0x7f070006;
         public static final int Green=0x7f070005;
+        public static final int Peach=0x7f070009;
         public static final int Purple=0x7f070007;
         public static final int Red=0x7f070004;
+        public static final int Yellow=0x7f070008;
         public static final int blue1=0x7f070000;
         public static final int blue2=0x7f070001;
         public static final int blue3=0x7f070002;
@@ -36,31 +38,37 @@ public final class R {
         public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
-        public static final int audio_placeholder=0x7f020000;
-        public static final int blue_kk_icon=0x7f020001;
-        public static final int ic_action_discard=0x7f020002;
-        public static final int ic_action_edit=0x7f020003;
-        public static final int ic_launcher=0x7f020004;
-        public static final int kk_launcher=0x7f020005;
-        public static final int kkicon=0x7f020006;
-        public static final int kklogo=0x7f020007;
-        public static final int soundoff=0x7f020008;
+        public static final int arrow=0x7f020000;
+        public static final int audio_placeholder=0x7f020001;
+        public static final int blue_kk_icon=0x7f020002;
+        public static final int ic_action_discard=0x7f020003;
+        public static final int ic_action_edit=0x7f020004;
+        public static final int ic_launcher=0x7f020005;
+        public static final int kk_launcher=0x7f020006;
+        public static final int kkicon=0x7f020007;
+        public static final int kklogo=0x7f020008;
+        public static final int soundoff=0x7f020009;
+        public static final int toggleoff=0x7f02000a;
+        public static final int toggleon=0x7f02000b;
     }
     public static final class id {
-        public static final int LinearLayout1=0x7f0a0011;
-        public static final int action_bar_home=0x7f0a001c;
-        public static final int action_bar_settings=0x7f0a001e;
-        public static final int action_bar_training=0x7f0a001d;
-        public static final int action_settings=0x7f0a001f;
-        public static final int alertColorBlue=0x7f0a000c;
+        public static final int LinearLayout1=0x7f0a0014;
+        public static final int action_bar_home=0x7f0a001f;
+        public static final int action_bar_settings=0x7f0a0021;
+        public static final int action_bar_training=0x7f0a0020;
+        public static final int action_settings=0x7f0a0022;
         public static final int alertColorGreen=0x7f0a000d;
+        public static final int alertColorPeach=0x7f0a0010;
         public static final int alertColorPurple=0x7f0a000e;
-        public static final int alertColorRed=0x7f0a000b;
+        public static final int alertColorRed=0x7f0a000c;
         public static final int alertColorSettings=0x7f0a000a;
-        public static final int button1=0x7f0a0019;
+        public static final int alertColorYellow=0x7f0a000f;
+        public static final int alertColors=0x7f0a000b;
+        public static final int button1=0x7f0a001c;
         public static final int container=0x7f0a0000;
-        public static final int imageView1=0x7f0a0012;
-        public static final int newSoundLabel=0x7f0a0018;
+        public static final int deleteButton=0x7f0a0011;
+        public static final int imageView1=0x7f0a0015;
+        public static final int newSoundLabel=0x7f0a001b;
         public static final int notificationScreenContainer=0x7f0a0001;
         public static final int notificationSettingsTitle=0x7f0a0004;
         public static final int notificationText=0x7f0a0002;
@@ -69,16 +77,16 @@ public final class R {
         public static final int notificationTypePush=0x7f0a0007;
         public static final int notificationTypeSettings=0x7f0a0005;
         public static final int notificationTypeVibrate=0x7f0a0009;
-        public static final int pictureLayout=0x7f0a001a;
-        public static final int recordButton=0x7f0a001b;
-        public static final int soundSelectionTitle=0x7f0a000f;
-        public static final int soundSettingsButton=0x7f0a0015;
-        public static final int soundTable=0x7f0a0010;
+        public static final int pictureLayout=0x7f0a001d;
+        public static final int recordButton=0x7f0a001e;
+        public static final int soundSelectionTitle=0x7f0a0012;
+        public static final int soundSettingsButton=0x7f0a0018;
+        public static final int soundTable=0x7f0a0013;
         public static final int splash=0x7f0a0003;
-        public static final int splashOnOff=0x7f0a0013;
-        public static final int textView1=0x7f0a0016;
-        public static final int textView2=0x7f0a0017;
-        public static final int trainingButton=0x7f0a0014;
+        public static final int splashOnOff=0x7f0a0016;
+        public static final int textView1=0x7f0a0019;
+        public static final int textView2=0x7f0a001a;
+        public static final int trainingButton=0x7f0a0017;
     }
     public static final class layout {
         public static final int activity_nav_action_bar=0x7f030000;
@@ -115,9 +123,11 @@ public final class R {
         public static final int addNewSound=0x7f060012;
         public static final int alertColorBlue=0x7f06002d;
         public static final int alertColorGreen=0x7f06002e;
+        public static final int alertColorPeach=0x7f060031;
         public static final int alertColorPurple=0x7f06002f;
         public static final int alertColorRed=0x7f06002c;
         public static final int alertColorTitle=0x7f06002b;
+        public static final int alertColorYellow=0x7f060030;
         public static final int app_name=0x7f060000;
         public static final int backButton=0x7f060010;
         public static final int backGroundListener=0x7f060014;
@@ -126,6 +136,9 @@ public final class R {
         public static final int colorPurple=0x7f06000c;
         public static final int colorRed=0x7f06000e;
         public static final int colorYellow=0x7f06000d;
+        public static final int delete_sound=0x7f060034;
+        public static final int delete_sound_message=0x7f060035;
+        public static final int error=0x7f060036;
         public static final int hello_world=0x7f060002;
         public static final int label_new_sound=0x7f060020;
         public static final int mainMenu=0x7f060016;
@@ -137,6 +150,7 @@ public final class R {
         public static final int notificationTypeTitle=0x7f060027;
         public static final int notificationTypeVibrate=0x7f060028;
         public static final int save=0x7f060021;
+        public static final int soundLabelError=0x7f060037;
         public static final int soundSelectionTitle=0x7f060011;
         public static final int splashSoundSettings=0x7f060009;
         public static final int splashTraining=0x7f060008;
@@ -144,9 +158,9 @@ public final class R {
         public static final int sucess=0x7f06001f;
         public static final int title_activity_nav_action_bar=0x7f060022;
         public static final int title_activity_notification__screen=0x7f060015;
-        public static final int title_activity_notification_preferences=0x7f060031;
+        public static final int title_activity_notification_preferences=0x7f060033;
         public static final int title_activity_sound_settings=0x7f060004;
-        public static final int title_activity_specific_sound_settings=0x7f060030;
+        public static final int title_activity_specific_sound_settings=0x7f060032;
         public static final int title_activity_training_final=0x7f06001e;
         public static final int title_activity_training_listen=0x7f06001a;
         public static final int title_activity_training_menu=0x7f060003;

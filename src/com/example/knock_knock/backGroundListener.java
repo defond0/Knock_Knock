@@ -50,6 +50,8 @@ public class backGroundListener extends Service  {
 	float[] windowSums;
 	AudioRecord recorder;
 	be.hogent.tarsos.dsp.AudioFormat tarForm;
+	final static double THRESHOLD=.32; 
+	
 	
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
@@ -188,13 +190,13 @@ public class backGroundListener extends Service  {
 					for (int m=-1*M; m<M;m++){
 						fx = Math.abs(m%M);
 						gx = Math.abs((M-m)%M);
-						tmp=complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft); // perhaps reverse template?
+						tmp=complexMultSumFFT(inputValuesMatrix[fx],templateMatrix[gx],fft); // (NOTE TEMPLATE IS REVERSED DUE TO ONLINE READINGS)
 						cV[fx]=(float) tmp;
 					}
 					
 					Cur_CONVO=sum(cV);
 					windowSums[M]=Cur_CONVO;
-					if(n%32==0){
+					if(n%32==0&&n>64){///what should be in here?
 						normalizeDetect(windowSums);
 					}
 					on = PreferenceStorage.getON_OFF(prefs);
@@ -224,7 +226,7 @@ public class backGroundListener extends Service  {
 			float t =0;
 			int k;
 			for (int j = 0; j < 32; ++j) {
-				k=62-2*j;
+				k=2*j;
 				v[2*j]   = incoming[2*j]*template[k] - incoming[2*j+1]*template[k+1]; // real
 				v[2*j+1] = incoming[2*j+1]*template[k] + incoming[2*j]*template[k+1]; // imaginary
 			}
@@ -238,6 +240,7 @@ public class backGroundListener extends Service  {
 	
 	public double[] normalizeDetect(float[] f){
 		double l = 0;
+		double max= Double.NEGATIVE_INFINITY;
 		double [] nD = new double[f.length];
 		for (int k=0;k<f.length;k++){
 			l += f[k]*f[k];
@@ -245,10 +248,13 @@ public class backGroundListener extends Service  {
 		double a = Math.sqrt(l);
 		for (int k=0;k<f.length;k++){
 			nD[k]=f[k]/a;
-			if(nD[k]>=.5){
-				detected(curSound);
+			if(nD[k]>max){
+				max=nD[k];
 			}
-			//System.out.println(f[k]/a);
+		}
+		System.out.println("Max Correlation: "+max +"at time: "+ System.currentTimeMillis());
+		if(max>=THRESHOLD){
+			detected(curSound);
 		}
 		return nD;
 	}
