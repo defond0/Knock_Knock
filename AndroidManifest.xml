@@ -74,7 +74,7 @@
         </service>
 
         <activity
-            android:name="com.example.knock_knock.__SOUND__Alert"
+            android:name="com.example.knock_knock.Notification_Screen"
             android:label="@string/title_activity_notification__screen" 
             android:parentActivityName="com.example.knock_knock.SplashPage" >
             <meta-data
