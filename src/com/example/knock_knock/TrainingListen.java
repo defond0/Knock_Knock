@@ -142,25 +142,6 @@ public class TrainingListen extends Activity implements Handler.Callback, Oscill
 			}
 	    }
 	
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.training_listen, menu);
-		return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-	    switch (item.getItemId()) {
-	    // This is broken, check activity stack?
-	    case android.R.id.home:
-	        NavUtils.navigateUpFromSameTask(this);
-	        return true;
-	    }
-	    return super.onOptionsItemSelected(item);
-	}
-	
 	public void recordHandler(View view){
 		recordButton = (Button) findViewById(R.id.recordButton);
 		if (!isRecording) {

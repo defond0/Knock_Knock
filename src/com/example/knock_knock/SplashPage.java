@@ -44,13 +44,6 @@ public class SplashPage extends Activity {
 		});
 	}
 
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		//getMenuInflater().inflate(R.menu.splash_page, menu);
-		return true;
-	}
-
 	public void toTrainMenu(View view) {
 		// Method for button onClick, returns to TrainingMenu
 		Intent i = new Intent(this, TrainingMenu.class);

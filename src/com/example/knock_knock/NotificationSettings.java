@@ -129,33 +129,6 @@ public class NotificationSettings extends Activity {
 			}
 	}
 	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.nav_action_bar, menu);
-		return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		switch (item.getItemId()) {
-	        case R.id.action_bar_home:
-	        	toSplashPage();
-	            return true;
-	        case R.id.action_bar_training:
-	        	toTrainMenu();
-	            return true;
-	        case R.id.action_bar_settings:
-	        	toSoundMenu();
-	        	return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-		}
-	}
-	
 	public void toTrainMenu(){
 		//Method for button onClick, returns to TrainingMenu
 		Intent i = new Intent(this, TrainingMenu.class);

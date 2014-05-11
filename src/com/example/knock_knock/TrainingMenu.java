@@ -18,34 +18,6 @@ public class TrainingMenu extends Activity {
 		getActionBar().setDisplayHomeAsUpEnabled(true);
 	
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.nav_action_bar, menu);
-		menu.findItem(R.id.action_bar_training).setEnabled(false);
-		return true;
-	}
-	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		// Handle action bar item clicks here. The action bar will
-		// automatically handle clicks on the Home/Up button, so long
-		// as you specify a parent activity in AndroidManifest.xml.
-		switch (item.getItemId()) {
-	        case R.id.action_bar_home:
-	        	toSplashPage();
-	            return true;
-	        case R.id.action_bar_settings:
-	        	toSoundMenu();
-	            return true;
-		    case android.R.id.home:
-		        NavUtils.navigateUpFromSameTask(this);
-		        return true;
-	        default:
-	            return super.onOptionsItemSelected(item);
-		}
-	}
 	
 	public void toTrainListen(View view){
 		Intent i = new Intent(this, TrainingListen.class);
