@@ -101,12 +101,6 @@
         android:text="@string/alertColorYellow"
         android:onClick="onAlertColorSelected"/>
     
-    <RadioButton android:id="@+id/alertColorPeach"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/alertColorPeach"
-        android:onClick="onAlertColorSelected"/>
-    
     </RadioGroup>
     
    <Button android:id="@+id/deleteButton"

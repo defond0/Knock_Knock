@@ -72,8 +72,6 @@ public class NotificationSettings extends Activity {
 			rb = (RadioButton) findViewById(R.id.alertColorPurple);
 		} else if (alertColor == getResources().getColor(R.color.Yellow)) {
 			rb = (RadioButton) findViewById(R.id.alertColorYellow);
-		} else if (alertColor == getResources().getColor(R.color.Peach)) {
-			rb = (RadioButton) findViewById(R.id.alertColorPeach);
 		}
 		rb.toggle();
 	}
@@ -94,9 +92,6 @@ public class NotificationSettings extends Activity {
         		break;
         	case R.id.alertColorYellow:
         		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Yellow));
-        		break;
-        	case R.id.alertColorPeach:
-        		PreferenceStorage.setColor(prefs, soundName, getResources().getColor(R.color.Peach));
         		break;
 		}
 	}
