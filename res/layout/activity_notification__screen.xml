@@ -9,6 +9,15 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".Notification_Screen" >
+    
+    <TextView
+        android:id="@+id/alertText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="@string/notificationAlert"
+        android:textSize="170sp"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
         android:id="@+id/notificationText"
@@ -17,6 +26,7 @@
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
         android:text="@string/msgWelcome"
+        android:textSize="40sp"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Button
