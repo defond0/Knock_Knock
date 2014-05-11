@@ -31,12 +31,15 @@
 
     <Button
         android:id="@+id/splash"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/notificationText"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="48dp"
+        android:paddingTop="25dp"
+        android:paddingBottom="25dp"
         android:onClick="toSplashPage"
+        android:textSize="20dp"
         android:text="@string/mainMenu" />
 
 </RelativeLayout>
