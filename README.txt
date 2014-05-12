@@ -1,0 +1,5 @@
+KNOCK KNOCK README
+
+1. If you wish to run the app immediately simply install the apk in the Knock_Knock folder,  Knock_Knock.apk. This will however have  a correlation threshold of .25 (sounds are about 25% correlated to trained sounds). This is not ideal for some sounds (see future implementation ideas at http://husk.eecs.berkeley.edu/courses/cs160-sp14/index.php/FinalFiles-Group:KnockKnock). 
+
+2. If you wish to alter the threshold, or just want to open the source code in your editor simply Import it into Eclipse, Build it, then if it is still not error free, Project->Clean as necessary. If you wish to change the correlation threshold for detection, open the class backGroundListener.java in your editor and find the Final Static Double THRESHOLD= some value;(Line 53 in the current build). Change the value to your desired correlation threshold between 0 and 1. Then Run the project on your favorite emulator or device. (NOTE: all of our group used Eclipse to develop Knock Knock so if the following does not work, and you are not using Eclipse please go through standard debugging methods for the editor of your choice.) 

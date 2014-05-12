@@ -128,17 +128,20 @@ public class NotificationSettings extends Activity {
 		//Method for button onClick, returns to TrainingMenu
 		Intent i = new Intent(this, TrainingMenu.class);
 	    startActivity(i);
+	    this.onStop();
 	}
 	
 	public void toSplashPage(){
 		//Method for button onClick, returns to SplashPage
 		Intent i = new Intent(this, SplashPage.class);
 	    startActivity(i);
+	    this.onStop();
 	}
 	
 	public void toSoundMenu(){
 		Intent i = new Intent(this, SoundSettings.class);
 	    startActivity(i);
+	    this.onStop();
 	}
 	
 	public void deleteSound(View v) {

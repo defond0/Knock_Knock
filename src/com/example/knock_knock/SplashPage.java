@@ -48,12 +48,14 @@ public class SplashPage extends Activity {
 		// Method for button onClick, returns to TrainingMenu
 		Intent i = new Intent(this, TrainingMenu.class);
 		startActivity(i);
+		this.onStop();
 	}
 
 	public void toSoundMenu(View view) {
 		// Method for button onClick, returns to SoundSettingMenu
 		Intent i = new Intent(this, SoundSettings.class);
 		startActivity(i);
+		this.onStop();
 	}
 	
 	public final static String EXTRA_MESSAGE = "com.example.backGroundList.MESSAGE";

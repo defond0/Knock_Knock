@@ -29,7 +29,7 @@
     <string name="title_activity_notification__screen">Sound Alert</string>
     <string name="mainMenu">Main Menu</string>
     <string name="training_title">Sound Training</string>
-    <string name="training_instruction">Before you proceed please get read to create the sound you wish to train Knock-Kock to detect. When you are ready press BEGIN to continue to the next step.</string>
+    <string name="training_instruction">Before you proceed please get ready to create the sound you wish to train Knock-Kock to detect. When you are ready press BEGIN to continue to the next step.</string>
     <string name="Begin">Begin</string>
     <string name="title_activity_training_listen">TrainingListen</string>
     <string name="training_listen_title">Record Sound</string>

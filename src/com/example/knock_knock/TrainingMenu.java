@@ -22,17 +22,20 @@ public class TrainingMenu extends Activity {
 	public void toTrainListen(View view){
 		Intent i = new Intent(this, TrainingListen.class);
 		startActivity(i);
+		this.onStop();
 	}
 	
 	public void toSoundMenu(){
 		Intent i = new Intent(this, SoundSettings.class);
 	    startActivity(i);
+	    this.onStop();
 	}
 	
 	public void toSplashPage(){
 		//Method for button onClick, returns to SplashPage
 		Intent i = new Intent(this, SplashPage.class);
 	    startActivity(i);
+	    this.onStop();
 	}
 
 }

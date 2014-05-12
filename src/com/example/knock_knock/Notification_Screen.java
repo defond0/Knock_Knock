@@ -53,6 +53,7 @@ public class Notification_Screen extends Activity {
 		//Method for button onClick, returns to SplashPage
 		Intent i = new Intent(this, SplashPage.class);
 	    startActivity(i);
+	    this.onStop();
 	}
 
 }
